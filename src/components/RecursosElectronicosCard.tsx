@@ -24,6 +24,7 @@ export const RecursosElectronicosCard = ({
   setExpandedCardIndex,
 }: Props) => {
   const [isTouchDevice, setIsTouchDevice] = useState(false);
+  console.log(title);
 
   useEffect(() => {
     setIsTouchDevice("ontouchstart" in window || navigator.maxTouchPoints > 0);

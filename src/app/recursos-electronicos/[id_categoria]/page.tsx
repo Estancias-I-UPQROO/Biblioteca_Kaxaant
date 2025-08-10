@@ -10,7 +10,7 @@ type RelacionCategoriaRecurso = {
   ID_Rel_Categorias_Recursos_Electronicos: string;
   ID_Recurso_Electronico: string;
   ID_Categoria_Recursos_Electronicos: string;
-  Recursos_Electronicos: {
+  recurso: {
     ID_Recurso_Electronico: string;
     Nombre: string;
     Descripcion: string;
@@ -55,20 +55,20 @@ export default function CategoriaPage() {
 
   useEffect(() => {
     if (!id_categoria) return;
-       console.log("ID categoria:", id_categoria);
     axios
-        .get(`http://localhost:4501/api/recursos-electronicos/get-recursos/${id_categoria}`)
-        .then(({ data }) => {
-            console.log("Respuesta API recursos:", data);
-            setRelaciones(data);
-            setLoadingRecursos(false);
-        })
-        .catch((error) => {
-            console.error("Error API:", error);
-            setErrorRecursos(error.message);
-            setLoadingRecursos(false);
-        });
+      .get(`http://localhost:4501/api/recursos-electronicos/get-recursos/${id_categoria}`)
+      .then(({ data }) => {
+        setRelaciones(data);
+        setLoadingRecursos(false);
+      })
+      .catch((error) => {
+        console.error("Error API:", error);
+        setErrorRecursos(error.message);
+        setLoadingRecursos(false);
+      });
   }, [id_categoria]);
+
+  console.log(relaciones)
 
   return (
     <div>
@@ -79,25 +79,22 @@ export default function CategoriaPage() {
         <p>No hay recursos para esta categoría.</p>
       )}
 
-      {!loadingRecursos && !errorRecursos && relaciones.length > 0 && (
+      {relaciones.length > 0 && (
         <RecursosElectronicosGrid>
-          {relaciones
-            .filter((relacion) => relacion.Recursos_Electronicos) // <-- evita undefined
-            .map((relacion, index) => {
-                const recurso = relacion.Recursos_Electronicos!;
-                return (
-                <RecursosElectronicosCard
-                    key={recurso.ID_Recurso_Electronico}
-                    title={recurso.Nombre}
-                    description={recurso.Descripcion}
-                    image={`http://localhost:4501${recurso.Imagen_URL}`}
-                    siteLink={recurso.Enlace_Pagina}
-                    index={index}
-                    expandedCardIndex={expandedCardIndex}
-                    setExpandedCardIndex={setExpandedCardIndex}
-                />
-                );
-            })}
+          {
+            relaciones.map((relacion, index) => (
+              <RecursosElectronicosCard
+                key={relacion.ID_Recurso_Electronico}
+                title={relacion.recurso.Nombre}
+                description={relacion.recurso.Descripcion}
+                image={`http://localhost:4501${relacion.recurso.Imagen_URL}`}
+                siteLink={relacion.recurso.Enlace_Pagina}
+                index={index}
+                expandedCardIndex={expandedCardIndex}
+                setExpandedCardIndex={setExpandedCardIndex}
+              />
+            ))
+          }
         </RecursosElectronicosGrid>
       )}
     </div>

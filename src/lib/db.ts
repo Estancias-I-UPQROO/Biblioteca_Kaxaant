@@ -18,14 +18,14 @@ let sequelize: Sequelize | null = null;
 
 
 const tunnelConfig = {
-  username: 'biblioteca_kaxaant',
-  password: '*biblioteca2025*',
-  host: 'academico.upqroo.edu.mx',
-  port: 22,
-  dstHost: '127.0.0.1',
-  dstPort: 3306,
-  localHost: '127.0.0.1',
-  localPort: 3307,
+  username: process.env.SSH_USER,
+  password: process.env.SSH_PASSWORD,
+  host: process.env.SSH_HOST,
+  port: +process.env.SSH_PORT!,
+  dstHost: process.env.SSH_DSTHOST,
+  dstPort: +process.env.SSH_DSTPORT!,
+  localHost: process.env.SSH_LOCALHOST,
+  localPort: +process.env.SSH_LOCALPORT!,
   keepAlive: true
 };
 
@@ -72,11 +72,11 @@ export const connectDB = async (): Promise<Sequelize> => {
       await createTunnel();
 
       sequelize = new Sequelize({
-        database: 'biblioteca_kaxaant',
-        username: 'biblioteca_kaxaant',
-        password: '*biblioteca2025*',
-        host: '127.0.0.1',
-        port: 3307,
+        database: process.env.DB_NAME,
+        username: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        host: process.env.DB_HOST,
+        port: +process.env.DB_PORT!,
         dialect: 'mysql',
         dialectModule: require('mysql2'),
         pool: { max: 10, min: 0, idle: 10000 },
