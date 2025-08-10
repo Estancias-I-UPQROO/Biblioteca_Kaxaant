@@ -72,7 +72,9 @@ export default function CategoriaPage() {
 
   return (
     <div>
-      <h1>{loadingCategoria ? "Cargando..." : categoria?.Nombre || "Categoría"}</h1>
+      <h1 className="text-4xl md:text-5xl font-extrabold text-center my-12 text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500">
+        {loadingCategoria ? "Cargando..." : categoria?.Nombre || "Categoría"}
+      </h1>
       {loadingRecursos && <p>Cargando recursos...</p>}
       {errorRecursos && <p>Error: {errorRecursos}</p>}
       {!loadingRecursos && !errorRecursos && relaciones.length === 0 && (
