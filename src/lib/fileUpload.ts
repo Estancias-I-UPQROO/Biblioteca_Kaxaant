@@ -3,22 +3,32 @@ import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { NextRequest } from 'next/server';
 
-// Configuración de directorios (ajusta según tu estructura)
+// Configuración de directorios
 const UPLOADS_DIR = path.join(process.cwd(), 'uploads');
-const SLIDERS_DIR = path.join(UPLOADS_DIR, 'sliders');
+const UPLOAD_TYPES = {
+  sliders: path.join(UPLOADS_DIR, 'sliders'),
+  recursos: path.join(UPLOADS_DIR, 'recursos'),
+  eventos: path.join(UPLOADS_DIR, 'eventos')
+};
 
 // Crear directorios si no existen
 async function ensureUploadsDir() {
   try {
     await fs.mkdir(UPLOADS_DIR, { recursive: true });
-    await fs.mkdir(SLIDERS_DIR, { recursive: true });
+    for (const dir of Object.values(UPLOAD_TYPES)) {
+      await fs.mkdir(dir, { recursive: true });
+    }
   } catch (error) {
     console.error('Error creando directorios de uploads:', error);
   }
 }
 
-// Procesar form-data (Next.js 13+)
-export async function handleFileUpload(req: NextRequest, fieldName: string) {
+// Procesar form-data para diferentes tipos de upload
+export async function handleFileUpload(
+  req: NextRequest, 
+  fieldName: string, 
+  uploadType: keyof typeof UPLOAD_TYPES
+) {
   await ensureUploadsDir();
   
   const formData = await req.formData();
@@ -26,11 +36,17 @@ export async function handleFileUpload(req: NextRequest, fieldName: string) {
 
   if (!file) return null;
 
+  // Validar tipo de imagen
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+  if (!allowedTypes.includes(file.type)) {
+    throw new Error('Tipo de archivo no permitido');
+  }
+
   // Generar nombre único para el archivo
   const ext = path.extname(file.name);
   const filename = `${uuidv4()}${ext}`;
-  const filePath = path.join(SLIDERS_DIR, filename);
-  const publicUrl = `/uploads/sliders/${filename}`;
+  const filePath = path.join(UPLOAD_TYPES[uploadType], filename);
+  const publicUrl = `/uploads/${uploadType}/${filename}`;
 
   // Convertir File a buffer y guardar
   const bytes = await file.arrayBuffer();
@@ -40,13 +56,27 @@ export async function handleFileUpload(req: NextRequest, fieldName: string) {
   return publicUrl;
 }
 
-// Eliminar archivo
-export async function deleteFile(fileUrl: string) {
+// Eliminar archivo según su tipo
+export async function deleteFile(
+  fileUrl: string, 
+  uploadType: keyof typeof UPLOAD_TYPES
+) {
   try {
     const filename = path.basename(fileUrl);
-    const filePath = path.join(SLIDERS_DIR, filename);
+    const filePath = path.join(UPLOAD_TYPES[uploadType], filename);
     await fs.unlink(filePath);
   } catch (error) {
     console.error('Error eliminando archivo:', error);
+    throw error;
   }
+}
+
+// Obtener buffer de imagen (para posible procesamiento)
+export async function getFileBuffer(
+  fileUrl: string,
+  uploadType: keyof typeof UPLOAD_TYPES
+) {
+  const filename = path.basename(fileUrl);
+  const filePath = path.join(UPLOAD_TYPES[uploadType], filename);
+  return fs.readFile(filePath);
 }

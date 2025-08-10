@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
         if (authResponse instanceof NextResponse) return authResponse;
 
         // Procesar la imagen
-        const imagenUrl = await handleFileUpload(req, 'imagen');
+        const imagenUrl = await handleFileUpload(req, 'imagen', 'sliders');
         if (!imagenUrl) {
             return NextResponse.json(
                 { message: 'Imagen no proporcionada' },

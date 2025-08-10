@@ -19,7 +19,7 @@ export async function DELETE(
         if (slider instanceof NextResponse) return slider;
 
         // Eliminar el archivo de imagen
-        await deleteFile(slider.Imagen_URL);
+        await deleteFile(slider.Imagen_URL, 'sliders');
 
         // Eliminar el registro de la base de datos
         await slider.destroy();

@@ -6,6 +6,7 @@ export const verifyJWT = async (req: NextRequest) => {
     const bearer = req.headers.get('authorization');
 
     if (!bearer) {
+        console.log('Es el bearer');
         return NextResponse.json(
             { message: 'No estás autorizado para realizar esta acción' },
             { status: 401 }
@@ -15,6 +16,7 @@ export const verifyJWT = async (req: NextRequest) => {
     const token = bearer.split(' ')[1];
 
     if (!token) {
+        console.log('Es el token');
         return NextResponse.json(
             { message: 'No estás autorizado para realizar esta acción' },
             { status: 401 }
@@ -30,6 +32,7 @@ export const verifyJWT = async (req: NextRequest) => {
             });
 
             if (!admin) {
+                console.log('Es el admin')
                 return NextResponse.json(
                     { message: 'No estás autorizado para realizar esta acción' },
                     { status: 401 }
