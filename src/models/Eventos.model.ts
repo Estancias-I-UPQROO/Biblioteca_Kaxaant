@@ -1,4 +1,5 @@
 import { Table, Model, Column, DataType, Default, PrimaryKey } from 'sequelize-typescript';
+import { SubEventos } from './SubEventos.model';
 
 @Table({ tableName: 'Eventos', timestamps: true })
 export class Eventos extends Model {
@@ -19,4 +20,6 @@ export class Eventos extends Model {
   @Default(true)
   @Column({ type: DataType.BOOLEAN })
   declare Activo: boolean;
+
+  declare SubEventos?: SubEventos[];
 }
