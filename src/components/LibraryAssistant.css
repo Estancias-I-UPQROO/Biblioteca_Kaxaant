@@ -1,0 +1,254 @@
+.assistant-container {
+  position: fixed;
+  bottom: 20px;
+  left: 20px; /* Cambiado a lado izquierdo */
+  z-index: 1000;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.assistant-btn {
+  background-color: #f26522;
+  border: none;
+  color: white;
+  border-radius: 50%;
+  padding: 12px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.assistant-chat {
+  width: 700px;
+  max-width: 90vw;
+  height: 400px;
+  background: #fff;
+  border: 2px solid #f26522;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Estilo para los enlaces dentro del bot */
+.bot-link {
+  color: #f26522; /* Azul clásico */
+  text-decoration: underline;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.bot-link:hover {
+  color: #f26522; /* Azul más oscuro al pasar el mouse */
+  text-decoration: none;
+}
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 767px) {
+  .assistant-chat {
+    width: 95vw;
+    height: 80vh;
+    flex-direction: column;
+  }
+
+  .chat-body {
+    flex-direction: column;
+  }
+
+  .chat-messages-section {
+    flex: 1;
+    padding: 10px;
+    border-right: none;
+    border-bottom: 1px solid #eee;
+  }
+
+  .quick-options {
+    flex: none;
+    padding: 10px;
+    flex-direction: column;
+    overflow-y: auto;
+    max-height: 200px;
+    border-top: 1px solid #eee;
+  }
+}
+
+.chat-header {
+  background-color: #fff;
+  padding: 12px 20px;
+  border-bottom: 2px solid #f26522;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #e65100;
+}
+
+.chat-body {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+}
+
+.chat-messages-section {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border-right: 1px solid #eee;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.message {
+  background-color: #fce9e3;
+  margin: 6px 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  max-width: 90%;
+  word-wrap: break-word;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.message.user {
+  background-color: #e6f4ff;
+  align-self: flex-end;
+  border: 1px solid #cde5ff;
+}
+
+.message.bot {
+  align-self: flex-start;
+  background-color: #fff7f2;
+  border: 1px solid #ffdfc9;
+}
+
+.chat-input {
+  display: flex;
+  align-items: center;
+  border-top: 1px solid #ddd;
+  padding: 6px 0 0;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid #ccc;
+  border-radius: 20px 0 0 20px;
+  font-size: 14px;
+  outline: none;
+}
+
+.send-btn {
+  background-color: #f26522;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 0 20px 20px 0;
+  cursor: pointer;
+}
+
+.send-btn:disabled {
+  background-color: #fcbba0;
+  cursor: not-allowed;
+}
+
+.typing-indicator {
+  margin: 8px 0;
+  display: flex;
+  gap: 4px;
+  justify-content: flex-start;
+  align-items: center;
+  padding-left: 10px;
+}
+
+.typing-indicator span {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #f26522;
+  border-radius: 50%;
+  animation: blink 1s infinite ease-in-out;
+}
+
+.typing-indicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes blink {
+  0%, 80%, 100% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-4px);
+  }
+}
+
+.quick-options {
+  flex: 1;
+  padding: 10px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+}
+
+.quick-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  background-color: #fff6f2;
+  border: 1px solid #ffc5a5;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #e65100;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.quick-option:hover {
+  background-color: #ffe7db;
+}
+/* Vertical (portrait) layout para móviles y tablets */
+@media (orientation: portrait) {
+  .assistant-chat {
+    flex-direction: column;
+    width: 95vw;
+    height: 80vh;
+  }
+
+  .chat-body {
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .chat-messages-section {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border-right: none;
+    border-bottom: 1px solid #eee;
+    overflow-y: auto;
+  }
+
+  .quick-options {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    overflow-y: auto;
+    border-top: 1px solid #eee;
+    max-height: 200px;
+  }
+}

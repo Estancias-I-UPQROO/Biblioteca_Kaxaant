@@ -133,11 +133,11 @@ body {
 .slider-jmind {
   background-color: #ffffff;
   padding: 2rem;
-  border-radius: 500px;
+
   color: white;
   font-family: 'Poppins', sans-serif;
   padding: 1cm 2rem ;
-  border: center  2px solid #f97316;
+ 
 }
 
 .slider-titulo {
