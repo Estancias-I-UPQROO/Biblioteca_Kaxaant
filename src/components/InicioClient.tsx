@@ -106,7 +106,7 @@ export default function InicioClient({ imagenesHero, inicioEventos }: InicioClie
             <div key={idx} className="slide-biblio">
               <img
                 // CAMBIO: Acceso a variables de entorno y a la URL de la imagen
-                src={`${process.env.NEXT_PUBLIC_API_URL}${src.Imagen_URL}`}
+                src={`http://localhost:4501${src.Imagen_URL}`}
                 alt={`Imagen biblioteca ${idx}`}
               />
               <div className="slide-overlay"></div>
@@ -159,7 +159,7 @@ export default function InicioClient({ imagenesHero, inicioEventos }: InicioClie
             >
               <img
                 // CAMBIO: Acceso a variables de entorno
-                src={`${process.env.NEXT_PUBLIC_API_URL}${evento.Imagen_URL}`}
+                src={`http://localhost:4501${evento.Imagen_URL}`}
                 alt={evento.Titulo}
               />
               <div className="slider-hover-box">

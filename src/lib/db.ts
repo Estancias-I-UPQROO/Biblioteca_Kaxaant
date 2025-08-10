@@ -51,47 +51,60 @@ async function createTunnel(): Promise<void> {
   });
 }
 
+let connectPromise: Promise<Sequelize> | null = null;
+
 export const connectDB = async (): Promise<Sequelize> => {
+  // Si ya hay conexión establecida
   if (sequelize) return sequelize;
 
-  try {
-    console.log('Establishing SSH tunnel...');
-    await createTunnel();
+  // Si ya hay una conexión en curso, espera esa
+  if (connectPromise) return connectPromise;
 
-    sequelize = new Sequelize({
-      database: 'biblioteca_kaxaant',
-      username: 'biblioteca_kaxaant',
-      password: '*biblioteca2025*',
-      host: '127.0.0.1',
-      port: 3307, // 👈 usa directamente tu localPort
-      dialect: 'mysql',
-      dialectModule: require('mysql2'),
-      pool: { max: 10, min: 0, idle: 10000 },
-      models: [
-        Admin,
-        Categorias_Recursos_Electronicos,
-        Eventos,
-        Recursos_Electronicos,
-        Rel_Categorias_Recursos_Electronicos,
-        Slider_Hero,
-        SubEventos
-      ],
-      retry: {
-        max: 3,
-        timeout: 10000
-      }
-    });
+  // Si no hay conexión ni en curso, empieza una
+  connectPromise = (async () => {
+    try {
+      console.log('Establishing SSH tunnel...');
+      await createTunnel();
 
-    await sequelize.authenticate();
-    await sequelize.sync();
-    setupRelations();
-    console.log('📦 Database connected');
-    return sequelize;
-  } catch (error) {
-    console.error('Connection error:', error);
-    if (sshTunnel) sshTunnel.close();
-    sequelize = null;
-    tunnelStarted = false; // 👈 reset si falla
-    throw error;
-  }
+      sequelize = new Sequelize({
+        database: 'biblioteca_kaxaant',
+        username: 'biblioteca_kaxaant',
+        password: '*biblioteca2025*',
+        host: '127.0.0.1',
+        port: 3307,
+        dialect: 'mysql',
+        dialectModule: require('mysql2'),
+        pool: { max: 10, min: 0, idle: 10000 },
+        models: [
+          Admin,
+          Categorias_Recursos_Electronicos,
+          Eventos,
+          Recursos_Electronicos,
+          Rel_Categorias_Recursos_Electronicos,
+          Slider_Hero,
+          SubEventos
+        ],
+        retry: {
+          max: 3,
+          timeout: 10000
+        }
+      });
+
+      setupRelations();
+      await sequelize.authenticate();
+      await sequelize.sync();
+      console.log('📦 Database connected');
+      return sequelize;
+    } catch (error) {
+      console.error('Connection error:', error);
+      if (sshTunnel) sshTunnel.close();
+      sequelize = null;
+      tunnelStarted = false;
+      throw error;
+    } finally {
+      connectPromise = null; // Limpia para próximos intentos
+    }
+  })();
+
+  return connectPromise;
 };

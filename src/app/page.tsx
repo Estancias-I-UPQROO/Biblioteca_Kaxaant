@@ -5,7 +5,6 @@ import type { Hero, Evento } from '@/lib/types'; // (Opcional) Mover tipos a un 
 // --- Funciones para obtener datos en el SERVIDOR ---
 
 async function getImagenesHero(): Promise<Hero[]> {
-  const BASE_URL_S = process.env.VITE_API_URL_Silder;
   try {
     const res = await fetch(`http://localhost:4501/api/slider-hero/get-sliders`, {
       cache: 'no-store', // Opcional: Evita que Next.js cachee esta petición
@@ -19,7 +18,6 @@ async function getImagenesHero(): Promise<Hero[]> {
 }
 
 async function getEventos(): Promise<Evento[]> {
-  const BASE_URL_E = process.env.VITE_API_URL_Eventos;
   try {
     const res = await fetch(`http://localhost:4501/api/eventos/get-eventos`, { cache: 'no-store' });
     if (!res.ok) throw new Error('Error cargando eventos');
