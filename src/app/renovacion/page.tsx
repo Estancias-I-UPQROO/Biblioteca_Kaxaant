@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { RefreshCwIcon, MailIcon, PlusIcon, MinusIcon, XIcon } from 'lucide-react';
 import axios from 'axios';
 
-// 2. Renombramos el componente y lo exportamos por defecto
 export default function RenovacionPage() {
   const [formData, setFormData] = useState({
     matricula: '',
@@ -14,9 +13,6 @@ export default function RenovacionPage() {
   const [respuesta, setRespuesta] = useState('');
   const [cargando, setCargando] = useState(false);
   const [mostrarModal, setMostrarModal] = useState(false);
-
-  // El resto de tu lógica y funciones se mantiene exactamente igual.
-  // ... (pega aquí todas tus funciones: handleChange, handleMatriculaChange, addLibro, etc.)
 
   const handleChange = (index: number, value: string) => {
     const updatedLibros = [...formData.nombre_libro];
@@ -55,11 +51,13 @@ export default function RenovacionPage() {
     }
 
     try {
-      // 3. Actualizamos cómo se accede a la variable de entorno
-      const BASE_URL = process.env.NEXT_PUBLIC_API_URL_Correos;
-      const { data } = await axios.post(`${BASE_URL}/enviar-correo-renovacion`, formData, {
-        headers: { 'Content-Type': 'application/json' },
-      });
+      // Cambiado para usar endpoint local
+      const { data } = await axios.post(
+        "http://localhost:4501/api/correos/enviar-correo-renovacion",
+        formData,
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+
       setRespuesta('Solicitud de renovación enviada con éxito. Recibirás una confirmación por correo. Tienes 3 días hábiles para devolver el libro a la biblioteca.');
       setFormData({ matricula: '', nombre_libro: [''] });
     } catch (error: any) {
@@ -77,7 +75,6 @@ export default function RenovacionPage() {
   const cerrarModal = () => {
     setMostrarModal(false);
   };
-
 
   return (
     <main className="min-h-screen bg-white text-gray-900 px-4 py-14 flex justify-center font-['Inter']">
@@ -182,4 +179,4 @@ export default function RenovacionPage() {
       </div>
     </main>
   );
-};
+}
