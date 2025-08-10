@@ -1,0 +1,553 @@
+.admin-panel {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f4f6f8;
+}
+
+.admin-sidebar {
+  width: 260px; /* Un poco más de espacio */
+  background-color: #1f2937; /* Un gris más oscuro y moderno */
+  color: #e5e7eb;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  
+  /* --- CLAVE PARA DEJARLO FIJO --- */
+  position: sticky; /* Se queda fijo en su lugar */
+  top: 0;           /* Pegado a la parte superior */
+  height: 100vh;      /* Ocupa toda la altura de la pantalla */
+  flex-shrink: 0;   /* Evita que se encoja */
+}
+
+.admin-sidebar h2 {
+  font-size: 1.6rem;
+  text-align: center;
+  margin-bottom: 2.5rem;
+  font-weight: 700;
+  color: white;
+}
+
+.admin-sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.admin-sidebar nav button {
+  width: 100%;
+  padding: 0.8rem 1.2rem;
+  background: none;
+  border: none;
+  color: #d1d5db;
+  text-align: left;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.admin-sidebar nav button:hover {
+  background-color: #374151;
+  color: white;
+}
+
+.admin-sidebar nav button.active {
+  background-color: #ff6600;
+  color: white;
+  font-weight: 600;
+}
+
+.logout-button {
+  margin-top: auto; /* Empuja el botón al final */
+  padding: 0.8rem 1.2rem;
+  background-color: #4b5563;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.logout-button:hover {
+  background-color: #374151;
+}
+
+.admin-content {
+  flex-grow: 1;
+  padding: 2rem 3rem;
+  width: 100%; /* Asegura que ocupe el espacio restante */
+}
+
+.admin-content h1 {
+  font-size: 2.25rem;
+  font-weight: 800;
+  margin-bottom: 2rem;
+  color: #111827;
+}
+
+.resource-form {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+}
+
+.resource-form h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.resource-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #555;
+}
+
+.resource-form input,
+.resource-form textarea {
+  width: calc(100% - 12px);
+  padding: 0.6rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.resource-form textarea {
+  min-height: 100px;
+}
+
+.resource-form .file-upload-label {
+  display: inline-block;
+  padding: 0.6rem 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.resource-form .file-upload-label:hover {
+  background-color: #0056b3;
+}
+
+.hero-images-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.hero-image-item {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.hero-image-item img {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  display: block;
+}
+
+.hero-image-item span {
+  display: block;
+  padding: 0.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #333;
+  background-color: #f9f9f9;
+}
+
+.hero-image-item .delete {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background-color: rgba(220, 53, 69, 0.8);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.hero-image-item:hover .delete {
+  opacity: 1;
+}
+
+.preview-section {
+  margin-top: 2.5rem;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 2rem;
+}
+
+.preview-section h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.hero-preview-wrapper {
+  max-width: 800px;
+  margin: auto;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+}
+
+/* Estilo para el contenedor que crea react-slick */
+.hero-preview-wrapper .slick-slide > div {
+  display: flex;
+  justify-content: center;
+}
+
+.hero-preview-image {
+  width: 100%;
+  height: 400px; 
+  max-width: 750px; /* Limita el ancho de la imagen dentro del slider */
+  object-fit: cover;
+  border-radius: 4px;
+}
+/* Estilos para la sección de Eventos */
+.add-button {
+  background-color: #28a745;
+  color: white;
+  font-weight: bold;
+  padding: 0.7rem 1.2rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  transition: background-color 0.3s ease;
+  font-size: 1rem;
+}
+.add-button:hover {
+  background-color: #218838;
+}
+
+.eventos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+
+.evento-card {
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.evento-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.evento-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+}
+
+.evento-card h4 {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 1rem;
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+  color: white;
+  font-size: 1.1rem;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+}
+
+.card-actions {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.evento-card:hover .card-actions {
+  opacity: 1;
+}
+.card-actions button {
+  background: white;
+  color: #333;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+.card-actions button:hover {
+  background-color: #eee;
+}
+
+/* Estilos para el formulario de eventos */
+.form-image-preview {
+  max-width: 100%;
+  height: auto;
+  max-height: 250px;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  object-fit: contain;
+  border: 1px solid #ddd;
+}
+
+.boton-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid #be0000;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.form-image-preview-small {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.file-upload-label.small,
+.boton-item button.small {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  background-color: #f8f9fa;
+  color: #333;
+  transition: background-color 0.3s ease;
+}
+.file-upload-label.small:hover,
+.boton-item button.small:hover {
+  background-color: #e9ecef;
+}
+
+.form-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.form-actions button {
+  padding: 0.7rem 1.2rem;
+  border-radius: 4px;
+  background-color: #bd7b18;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+.form-actions button:hover{
+  padding: 0.7rem 1.2rem;
+  border-radius: 4px;
+  background-color: #ff9900;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.form-actions button.save {
+  background-color: #007bff;
+  color: white;
+  border: none;
+}
+.form-actions button.save:hover {
+  background-color: #0056b3;
+}
+
+.form-actions button.cancel {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+}
+.form-actions button.cancel:hover {
+  background-color: #5a6268;
+}
+
+.form-actions button.delete {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+}
+.form-actions button.delete:hover {
+  background-color: #c82333;
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  color: white;
+  font-size: 1.5rem;
+}
+
+.error-message {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.error-message button {
+  background: none;
+  border: none;
+  color: #721c24;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-left: 1rem;
+}
+/* RUTA: src/components/Navbar.css */
+
+/* --- Estructura Principal del Navbar --- */
+.navbar {
+  /* --- ESTILOS PARA DEJARLO FIJO --- */
+  position: sticky; /* Se queda "pegajoso" en la parte superior */
+  top: 0;           /* Se pega en la parte más alta */
+  z-index: 50;      /* Se asegura de que esté por encima de otro contenido */
+  
+  /* --- Estilos visuales --- */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: padding 0.3s ease;
+}
+
+.navbar-logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #111827;
+  text-decoration: none;
+  flex-shrink: 0; /* Evita que el logo se encoja */
+}
+
+/* --- Enlaces de Navegación (para Escritorio) --- */
+.nav-links {
+  display: none; /* Oculto por defecto en móvil */
+  gap: 1.5rem;
+}
+
+.nav-link {
+  color: #4b5563;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  padding-bottom: 4px;
+  border-bottom: 2px solid transparent;
+}
+
+.nav-link:hover {
+  color: #111827;
+}
+
+.nav-link.active {
+  color: #f97316; /* Color naranja para el enlace activo */
+  border-bottom-color: #f97316;
+}
+
+/* --- Botón de Menú Móvil (Hamburguesa) --- */
+.mobile-menu-button {
+  display: block; /* Visible por defecto en móvil */
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+/* --- Media Query para pantallas de escritorio --- */
+/* Cuando la pantalla sea de 768px o más ancha... */
+@media (min-width: 768px) {
+  .nav-links {
+    display: flex; /* Muestra los enlaces de navegación */
+  }
+  .mobile-menu-button {
+    display: none; /* Oculta el botón de hamburguesa */
+  }
+}
+@media (max-width: 768px) {
+  .admin-panel {
+    /* Cambiamos la dirección para que el contenido esté debajo del menú */
+    flex-direction: column;
+  }
+
+  .admin-sidebar {
+    width: 100%;       /* Ocupa todo el ancho */
+    height: auto;      /* La altura se ajusta al contenido */
+    position: static;  /* Ya no es fijo en el lateral */
+    flex-direction: row; /* Elementos en horizontal */
+    justify-content: space-between; /* Espacio entre logo, nav y logout */
+    align-items: center;
+    padding: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .admin-sidebar h2 {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+  
+  .admin-sidebar nav {
+    flex-direction: row; /* Botones de navegación en fila */
+    gap: 0.5rem;
+  }
+  
+  .admin-sidebar nav button {
+    padding: 0.5rem 0.8rem;
+  }
+  
+  .logout-button {
+    margin: 0;
+  }
+
+  .admin-content {
+    padding: 1.5rem; /* Menos padding en móvil */
+  }
+
+  .admin-content h1 {
+    font-size: 1.75rem;
+  }
+}

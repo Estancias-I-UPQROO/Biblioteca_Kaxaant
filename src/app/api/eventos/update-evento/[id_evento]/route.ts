@@ -1,4 +1,5 @@
-// src/app/api/eventos/update-evento/[id_evento]/route.ts
+// RUTA: src/app/api/eventos/update-evento/[id_evento]/route.ts
+
 import { connectDB } from '@/lib/db';
 import { deleteFile, handleFileUpload } from '@/lib/fileUpload';
 import { verifyJWT } from '@/lib/middlewares/verifyJWT';
@@ -12,129 +13,99 @@ interface EventoWithSubEventos extends Eventos {
 
 export async function PUT(req: NextRequest, { params }: { params: { id_evento: string } }) {
   try {
-    // Verificar JWT y conectar DB
     await connectDB();
     const admin = await verifyJWT(req);
     if (admin instanceof NextResponse) return admin;
 
     const { id_evento } = params;
-    const evento = await Eventos.findByPk(id_evento, { 
+    const evento = await Eventos.findByPk(id_evento, {
       include: [{ model: SubEventos, as: 'SubEventos' }]
     }) as EventoWithSubEventos;
     
     if (!evento) {
-      return NextResponse.json(
-        { message: 'Evento no encontrado' },
-        { status: 404 }
-      );
+      return NextResponse.json({ message: 'Evento no encontrado' }, { status: 404 });
     }
 
     const formData = await req.formData();
     
-    // Procesar imagen principal si se proporciona
+    // --- Lógica de actualización del evento principal (sin cambios) ---
     const imagenFile = formData.get('imagen') as File | null;
     let imagenUrl = evento.Imagen_URL;
-
     if (imagenFile && imagenFile.size > 0) {
-      // Eliminar imagen anterior
-      if (evento.Imagen_URL) {
-        await deleteFile(evento.Imagen_URL, 'eventos');
-      }
-      // Subir nueva imagen
+      if (evento.Imagen_URL) await deleteFile(evento.Imagen_URL, 'eventos');
       imagenUrl = await handleFileUpload(formData, 'imagen', 'eventos') || evento.Imagen_URL;
     }
-
-    // Procesar datos del formulario
-    const titulo = formData.get('Titulo') as string;
-    const descripcion = formData.get('Descripcion') as string;
-    const subeventos = formData.get('subeventos') as string;
-
-    // Actualizar campos básicos
     await evento.update({
-      Titulo: titulo || evento.Titulo,
-      Descripcion: descripcion || evento.Descripcion,
+      Titulo: formData.get('Titulo') as string || evento.Titulo,
+      Descripcion: formData.get('Descripcion') as string || evento.Descripcion,
       Imagen_URL: imagenUrl
     });
 
-    // Procesar subeventos
-    const subeventosArray = subeventos ? JSON.parse(subeventos) : [];
+    // --- LÓGICA DE SUB-EVENTOS CORREGIDA Y MEJORADA ---
+    const subeventosArray = JSON.parse(formData.get('subeventos') as string || '[]');
     const subeventosFiles = formData.getAll('subeventosImages') as File[];
+    
+    const existingSubEventosMap = new Map((evento.SubEventos || []).map(se => [se.ID_SubEvento, se]));
+    const receivedSubEventosIds = new Set(subeventosArray.map((se: any) => se.ID_SubEvento).filter(Boolean));
+    
+    let fileCounter = 0;
 
-    // Mapeo de subeventos existentes
-    const existentesMap = new Map();
-    if (evento.SubEventos) {
-      evento.SubEventos.forEach(se => existentesMap.set(se.ID_SubEvento, se));
-    }
+    for (const subeventoData of subeventosArray) {
+      // Caso 1: Actualizar un sub-evento existente
+      if (subeventoData.ID_SubEvento && existingSubEventosMap.has(subeventoData.ID_SubEvento)) {
+        const subeventoToUpdate = existingSubEventosMap.get(subeventoData.ID_SubEvento)!;
+        let subeventoImageUrl = subeventoToUpdate.Imagen_URL;
 
-    const idsRecibidos = subeventosArray.map((se: any) => se.ID_SubEvento).filter(Boolean);
-
-    // Procesar subeventos
-    for (let i = 0; i < subeventosArray.length; i++) {
-      const se = subeventosArray[i];
-      const subeventoFile = subeventosFiles[i];
-      const existingSub = se.ID_SubEvento ? existentesMap.get(se.ID_SubEvento) : null;
-
-      if (existingSub) {
-        // Actualizar subevento existente
-        if (subeventoFile && subeventoFile.size > 0) {
-          if (existingSub.Imagen_URL) {
-            await deleteFile(existingSub.Imagen_URL, 'eventos');
+        // Si se envió una nueva imagen para este sub-evento existente
+        if (subeventoData.hasNewImage) {
+          const newImageFile = subeventosFiles[fileCounter++];
+          if (subeventoToUpdate.Imagen_URL) {
+            await deleteFile(subeventoToUpdate.Imagen_URL, 'eventos');
           }
-          
-          // Crear nuevo FormData para el archivo
-          const subeventoFormData = new FormData();
-          subeventoFormData.append('file', subeventoFile);
-          
-          const newImageUrl = await handleFileUpload(subeventoFormData, 'file', 'eventos');
-          if (newImageUrl) {
-            existingSub.Imagen_URL = newImageUrl;
-          }
+          const tempFormData = new FormData();
+          tempFormData.append('file', newImageFile);
+          subeventoImageUrl = await handleFileUpload(tempFormData, 'file', 'eventos') || subeventoToUpdate.Imagen_URL;
         }
-        existingSub.Titulo = se.Titulo;
-        await existingSub.save();
-      } else if (se.Titulo) {
-        // Crear nuevo subevento
-        let newImageUrl = se.Imagen_URL || null;
-        
-        if (subeventoFile && subeventoFile.size > 0) {
-          // Crear nuevo FormData para el archivo
-          const subeventoFormData = new FormData();
-          subeventoFormData.append('file', subeventoFile);
-          
-          newImageUrl = await handleFileUpload(subeventoFormData, 'file', 'eventos');
+
+        await subeventoToUpdate.update({
+          Titulo: subeventoData.Titulo,
+          Imagen_URL: subeventoImageUrl
+        });
+
+      // Caso 2: Crear un sub-evento nuevo
+      } else if (subeventoData.Titulo) {
+        let newImageUrl = null;
+        if (subeventoData.hasNewImage) {
+          const newImageFile = subeventosFiles[fileCounter++];
+          const tempFormData = new FormData();
+          tempFormData.append('file', newImageFile);
+          newImageUrl = await handleFileUpload(tempFormData, 'file', 'eventos');
         }
 
         if (newImageUrl) {
           await SubEventos.create({
             ID_Evento: evento.ID_Evento,
-            Titulo: se.Titulo,
+            Titulo: subeventoData.Titulo,
             Imagen_URL: newImageUrl
           });
         }
       }
     }
 
-    // Eliminar subeventos no incluidos en la solicitud
-    if (evento.SubEventos) {
-      for (const subevento of evento.SubEventos) {
-        if (!idsRecibidos.includes(subevento.ID_SubEvento)) {
-          if (subevento.Imagen_URL) {
-            await deleteFile(subevento.Imagen_URL, 'eventos');
-          }
-          await subevento.destroy();
+    // Caso 3: Eliminar sub-eventos que ya no están en la lista
+    for (const [id, subevento] of existingSubEventosMap.entries()) {
+      if (!receivedSubEventosIds.has(id)) {
+        if (subevento.Imagen_URL) {
+          await deleteFile(subevento.Imagen_URL, 'eventos');
         }
+        await subevento.destroy();
       }
     }
 
-    return NextResponse.json(
-      { message: "Evento actualizado correctamente" },
-      { status: 200 }
-    );
+    return NextResponse.json({ message: "Evento actualizado correctamente" }, { status: 200 });
+
   } catch (error) {
     console.error(error);
-    return NextResponse.json(
-      { message: 'Error interno del servidor' },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: 'Error interno del servidor' }, { status: 500 });
   }
 }
