@@ -2,17 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyJWT } from '@/lib/middlewares/verifyJWT';
 import { verifyCategoriaExists } from '@/lib/middlewares/verifyCategoriaExists';
 import { verifyDuplicatedCategoria } from '@/lib/middlewares/verifyDuplicatedCategoria';
+import { connectDB } from '@/lib/db';
 
 export async function PUT(
     req: Request,
     { params }: { params: { id_categoria: string } }
 ) {
     try {
+        await connectDB();
         // Verificar JWT
+        const { id_categoria } = await params;
         const authResponse = await verifyJWT(req as unknown as NextRequest);
         if (authResponse instanceof NextResponse) return authResponse;
 
-        const { id_categoria } = params;
         const body = await req.json();
         const { Nombre } = body;
 

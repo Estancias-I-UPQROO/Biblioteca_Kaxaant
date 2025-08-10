@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyJWT } from '@/lib/middlewares/verifyJWT';
 import { Categorias_Recursos_Electronicos } from '@/models/Categorias_Recursos_Electronicos.model';
+import { connectDB } from '@/lib/db';
 
 export async function POST(req: Request) {
     try {
+        await connectDB();
         // Verificar JWT
         const authResponse = await verifyJWT(req as unknown as NextRequest);
         if (authResponse instanceof NextResponse) return authResponse;

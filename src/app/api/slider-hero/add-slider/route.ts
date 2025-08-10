@@ -2,15 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyJWT } from '@/lib/middlewares/verifyJWT';
 import { handleFileUpload } from '@/lib/fileUpload';
 import { Slider_Hero } from '@/models/Slider_Hero.model';
+import { connectDB } from '@/lib/db';
 
 export async function POST(req: NextRequest) {
     try {
+        await connectDB();
         // Verificar JWT
         const authResponse = await verifyJWT(req);
         if (authResponse instanceof NextResponse) return authResponse;
 
         // Procesar la imagen
-        const imagenUrl = await handleFileUpload(req, 'imagen', 'sliders');
+        const formData = await req.formData();
+        const imagenUrl = await handleFileUpload(formData, 'imagen', 'sliders');
         if (!imagenUrl) {
             return NextResponse.json(
                 { message: 'Imagen no proporcionada' },

@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { optionalVerifyJWT } from '@/lib/middlewares/optionalVerifyJWT';
 import { verifyCategoriaExists } from '@/lib/middlewares/verifyCategoriaExists';
+import { connectDB } from '@/lib/db';
 
 export async function GET(
     req: Request,
     { params }: { params: { id_categoria: string } }
 ) {
     try {
-        const { id_categoria } = params;
+        await connectDB();
+        const { id_categoria } = await params;
         
         // Verificar si la categoría existe
         const categoria = await verifyCategoriaExists(id_categoria);

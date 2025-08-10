@@ -1,7 +1,6 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
-import { NextRequest } from 'next/server';
 
 // Configuración de directorios
 const UPLOADS_DIR = path.join(process.cwd(), 'uploads');
@@ -23,18 +22,17 @@ async function ensureUploadsDir() {
   }
 }
 
-// Procesar form-data para diferentes tipos de upload
+// Procesar form-data para diferentes tipos de upload (ahora recibe FormData)
 export async function handleFileUpload(
-  req: NextRequest, 
-  fieldName: string, 
+  formData: FormData,
+  fieldName: string,
   uploadType: keyof typeof UPLOAD_TYPES
 ) {
   await ensureUploadsDir();
-  
-  const formData = await req.formData();
+
   const file = formData.get(fieldName) as File | null;
 
-  if (!file) return null;
+  if (!file || file.size === 0) return null;
 
   // Validar tipo de imagen
   const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
@@ -56,9 +54,9 @@ export async function handleFileUpload(
   return publicUrl;
 }
 
-// Eliminar archivo según su tipo
+// Resto de las funciones permanecen igual...
 export async function deleteFile(
-  fileUrl: string, 
+  fileUrl: string,
   uploadType: keyof typeof UPLOAD_TYPES
 ) {
   try {
@@ -71,7 +69,6 @@ export async function deleteFile(
   }
 }
 
-// Obtener buffer de imagen (para posible procesamiento)
 export async function getFileBuffer(
   fileUrl: string,
   uploadType: keyof typeof UPLOAD_TYPES

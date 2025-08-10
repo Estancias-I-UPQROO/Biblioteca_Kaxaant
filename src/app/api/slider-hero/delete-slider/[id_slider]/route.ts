@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyJWT } from '@/lib/middlewares/verifyJWT';
 import { verifySliderExists } from '@/lib/middlewares/verifySliderExists';
 import { deleteFile } from '@/lib/fileUpload';
+import { connectDB } from '@/lib/db';
 
 export async function DELETE(
     req: NextRequest,
@@ -9,6 +10,7 @@ export async function DELETE(
 ) {
     try {
         // Verificar JWT
+        await connectDB();
         const authResponse = await verifyJWT(req);
         if (authResponse instanceof NextResponse) return authResponse;
 

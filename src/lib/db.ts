@@ -8,6 +8,7 @@ import { Recursos_Electronicos } from '@/models/Recursos_Electronicos.model';
 import { Rel_Categorias_Recursos_Electronicos } from '@/models/Rel_Categorias_Recursos_Electronicos.model';
 import { Slider_Hero } from '@/models/Slider_Hero.model';
 import { SubEventos } from '@/models/SubEventos.model';
+import { setupRelations } from '@/models';
 
 dotenv.config();
 
@@ -30,10 +31,15 @@ const tunnelConfig = {
 };
 
 
+let tunnelStarted = false;
+
 async function createTunnel(): Promise<void> {
+  if (tunnelStarted) return; // 👈 evita múltiples túneles
+
   return new Promise((resolve, reject) => {
     sshTunnel = tunnel(tunnelConfig, (err: any) => {
       if (err) return reject(err);
+      tunnelStarted = true; // 👈 marcar como iniciado
       console.log('✅ SSH Tunnel established');
       resolve();
     });
@@ -57,11 +63,19 @@ export const connectDB = async (): Promise<Sequelize> => {
       username: 'biblioteca_kaxaant',
       password: '*biblioteca2025*',
       host: '127.0.0.1',
-      port: Number(process.env.SSH_LOCALPORT),
+      port: 3307, // 👈 usa directamente tu localPort
       dialect: 'mysql',
       dialectModule: require('mysql2'),
       pool: { max: 10, min: 0, idle: 10000 },
-      models: [Admin, Categorias_Recursos_Electronicos, Eventos, Recursos_Electronicos, Rel_Categorias_Recursos_Electronicos, Slider_Hero, SubEventos],
+      models: [
+        Admin,
+        Categorias_Recursos_Electronicos,
+        Eventos,
+        Recursos_Electronicos,
+        Rel_Categorias_Recursos_Electronicos,
+        Slider_Hero,
+        SubEventos
+      ],
       retry: {
         max: 3,
         timeout: 10000
@@ -70,12 +84,14 @@ export const connectDB = async (): Promise<Sequelize> => {
 
     await sequelize.authenticate();
     await sequelize.sync();
+    setupRelations();
     console.log('📦 Database connected');
     return sequelize;
   } catch (error) {
     console.error('Connection error:', error);
     if (sshTunnel) sshTunnel.close();
     sequelize = null;
+    tunnelStarted = false; // 👈 reset si falla
     throw error;
   }
 };
