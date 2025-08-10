@@ -13,7 +13,7 @@ export const sendEmail = async ({ matricula, asunto, contenido }: EmailProps) =>
   try {
     const { error } = await resend.emails.send({
       from: `${matricula}@resend.dev`,
-      to: 'bluevelociraptor1555@gmail.com',
+      to: '202300206@upqroo.edu.mx',
       subject: asunto,
       text: contenido,
     });
