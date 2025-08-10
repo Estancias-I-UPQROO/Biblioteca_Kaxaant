@@ -1,0 +1,141 @@
+.redes-sociales {
+  position: fixed;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.red-social {
+  color: white;
+  font-size: 1.3rem;
+  transition: all 0.3s ease;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Colores específicos para cada red social */
+.red-social.facebook {
+  background-color: #1877F2; /* Azul Facebook */
+}
+
+.red-social.x {
+  background-color: #000000; /* Negro de X/Twitter */
+}
+
+.red-social.instagram {
+  background: linear-gradient(45deg, #405DE6, #5851DB, #833AB4, #C13584, #E1306C, #FD1D1D, #F56040, #F77737, #FCAF45, #FFDC80);
+}
+
+.red-social.youtube {
+  background-color: #FF0000; /* Rojo YouTube */
+}
+
+.red-social.tiktok {
+  background-color: #000000; /* Negro de TikTok */
+}
+
+/* Efecto hover genérico */
+.red-social:hover {
+  transform: scale(1.15) translateY(-3px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  opacity: 0.9;
+}
+
+/* Efectos hover específicos */
+.red-social.facebook:hover {
+  background-color: #166FE5;
+}
+
+.red-social.x:hover {
+  background-color: #1A1A1A;
+}
+
+.red-social.instagram:hover {
+  opacity: 0.9;
+}
+
+.red-social.youtube:hover {
+  background-color: #E60000;
+}
+
+.red-social.tiktok:hover {
+  background-color: #1A1A1A;
+}
+
+/* Estilos para móvil */
+.redes-sociales.mobile {
+  top: auto;
+  bottom: 1rem;
+  right: 1rem;
+  transform: none;
+  flex-direction: column-reverse;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
+.redes-sociales.mobile .social-collapse {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Botón flotante para móvil */
+.toggle-button {
+  background-color: #0056a4;
+  font-size: 1.4rem;
+  color: white;
+  transition: all 0.3s ease;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-button:hover {
+  background-color: #003f7f;
+  transform: scale(1.1);
+}
+
+/* Contenedor animado */
+.social-collapse {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, opacity 0.3s ease;
+}
+
+.social-collapse.expanded {
+  max-height: 400px;
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .red-social {
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
+  }
+  
+  .toggle-button {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+}

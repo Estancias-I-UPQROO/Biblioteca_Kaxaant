@@ -1,5 +1,5 @@
 // RUTA: app/page.tsx (Este es tu nuevo componente de Servidor)
-import InicioClient from '@/components/InicioClient'; // Asumiendo que crearás la carpeta 'components'
+import InicioClient from '@/components/InicioClient'; 
 import type { Hero, Evento } from '@/lib/types'; // (Opcional) Mover tipos a un archivo separado
 
 // --- Funciones para obtener datos en el SERVIDOR ---

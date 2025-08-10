@@ -1,0 +1,10 @@
+.footer-bg{
+    background-image: url(../../public/Upqroo_Entrada.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+}
+
+.footer-orange-bg{
+    background-color: rgba(61, 34, 1, 0.623)
+}

@@ -9,7 +9,7 @@ import Slider from 'react-slick';
 import type { Settings } from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import './styles.css'; // Asegúrate que este archivo existe en la misma carpeta
+import './InicioClient.css'; // Asegúrate que este archivo existe en la misma carpeta
 
 // Asumiendo que moviste los tipos a un archivo central
 import type { Hero, Evento } from '@/lib/types';
@@ -174,7 +174,36 @@ export default function InicioClient({ imagenesHero, inicioEventos }: InicioClie
       {/* Modal (sin cambios en su lógica o JSX) */}
       {modalAbierto && eventoSeleccionado && (
         <div className="modal-overlay" onClick={cerrarModal}>
-            {/* ... todo el código del modal se mantiene igual ... */}
+          <div className="modal-contenido" onClick={e => e.stopPropagation()}>
+            <button className="modal-cerrar" onClick={cerrarModal}>&times;</button>
+            <div className="modal-imagen-container">
+              <img
+                src={imagenActual?.startsWith('http') ? imagenActual : `http://localhost:4501/${imagenActual || eventoSeleccionado.Imagen_URL}`}
+                alt={eventoSeleccionado.Titulo}
+                className="modal-imagen-fullscreen"
+              />
+            </div>
+            <div className="modal-texto">
+              <h3>{eventoSeleccionado.Titulo}</h3>
+              <p>{eventoSeleccionado.Descripcion}</p>
+              {eventoSeleccionado.SubEventos && eventoSeleccionado.SubEventos.length > 0 && (
+                <div className="botones-imagenes">
+                  {eventoSeleccionado.SubEventos.map((subevento) => (
+                    <button
+                      key={subevento.ID_SubEvento}
+                      className={`imagen-boton ${imagenActual === subevento.Imagen_URL ? 'activo' : ''}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        cambiarImagen(`http://localhost:4501/${subevento.Imagen_URL}`)
+                      }}
+                    >
+                      {subevento.Titulo}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </div>
