@@ -15,7 +15,6 @@ dotenv.config();
 const tunnel = (tunnel_ssh as any).default || tunnel_ssh;
 
 let sequelize: Sequelize | null = null;
-let sshTunnel: any = null;
 
 
 const tunnelConfig = {
@@ -31,20 +30,26 @@ const tunnelConfig = {
 };
 
 
-let tunnelStarted = false;
+declare global {
+  var sshTunnelGlobal: any | undefined;
+  var tunnelStartedGlobal: boolean | undefined;
+}
+
+const sshTunnel = global.sshTunnelGlobal;
+let tunnelStarted = global.tunnelStartedGlobal;
 
 async function createTunnel(): Promise<void> {
-  if (tunnelStarted) return; // 👈 evita múltiples túneles
+  if (global.tunnelStartedGlobal) return;
 
   return new Promise((resolve, reject) => {
-    sshTunnel = tunnel(tunnelConfig, (err: any) => {
+    global.sshTunnelGlobal = tunnel(tunnelConfig, (err: any) => {
       if (err) return reject(err);
-      tunnelStarted = true; // 👈 marcar como iniciado
+      global.tunnelStartedGlobal = true;
       console.log('✅ SSH Tunnel established');
       resolve();
     });
 
-    sshTunnel.on('error', (err: any) => {
+    global.sshTunnelGlobal.on('error', (err: any) => {
       console.error('Tunnel error:', err);
       reject(err);
     });
@@ -95,12 +100,14 @@ export const connectDB = async (): Promise<Sequelize> => {
       await sequelize.sync();
       console.log('📦 Database connected');
       return sequelize;
+      
     } catch (error) {
       console.error('Connection error:', error);
-      if (sshTunnel) sshTunnel.close();
+      if (global.sshTunnelGlobal) global.sshTunnelGlobal.close();
       sequelize = null;
-      tunnelStarted = false;
+      global.tunnelStartedGlobal = false;
       throw error;
+
     } finally {
       connectPromise = null; // Limpia para próximos intentos
     }
