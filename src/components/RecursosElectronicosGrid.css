@@ -137,4 +137,127 @@
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
+}/* RUTA: src/components/RecursosElectronicosGrid.css */
+
+.recursos-grid-container {
+  padding: 1rem;
+}
+
+.recursos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.recursos-card {
+  aspect-ratio: 1 / 1;
+  border-radius: 1rem;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.recursos-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.15);
+}
+
+.recursos-card-image-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.recursos-card-title-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+  padding: 2rem 1rem 1rem;
+  z-index: 1;
+  transition: opacity 0.3s ease;
+}
+
+/* Ocultamos el título cuando aparece la descripción */
+.recursos-card:hover .recursos-card-title-overlay {
+  opacity: 0;
+}
+
+/* El overlay con la descripción */
+.recursos-card-description-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  z-index: 2;
+  opacity: 0; /* Oculto por defecto */
+  pointer-events: none; /* No interfiere con el cursor */
+  transition: opacity 0.3s ease;
+}
+
+/* Se muestra al pasar el cursor sobre la tarjeta */
+.recursos-card:hover .recursos-card-description-overlay {
+  opacity: 1;
+  pointer-events: auto; /* Se puede interactuar con él */
+}
+
+.recursos-card-description {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  font-weight: 500;
+  margin: 0;
+  max-height: 80%;
+  overflow-y: auto;
+  padding: 0.5rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+/* Estilos para el enlace "Visitar Sitio" */
+.recursos-card-sitelink {
+  margin-top: 0.75rem;
+  padding: 0.25rem;
+  background-color: transparent; /* Fondo transparente */
+  color: #f97316; /* Color naranja vivo */
+  border-radius: 0.25rem;
+  text-decoration: underline; /* Subrayado */
+  text-underline-offset: 4px;
+  font-weight: 600;
+  transition: color 0.2s ease-in-out;
+}
+
+.recursos-card-sitelink:hover {
+  color: #fb923c; /* Naranja más claro al pasar el mouse */
+}
+.recursos-grid {
+  display: grid;
+  gap: 2rem;
+  
+  /* Por defecto (móviles como el Pixel 7), muestra 2 columnas */
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* Para pantallas medianas (tabletas y laptops pequeñas) a partir de 768px */
+@media (min-width: 768px) {
+  .recursos-grid {
+    /* Muestra 3 columnas */
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Para pantallas grandes (laptops grandes y monitores) a partir de 1280px */
+@media (min-width: 1280px) {
+  .recursos-grid {
+    /* Muestra 4 columnas */
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
