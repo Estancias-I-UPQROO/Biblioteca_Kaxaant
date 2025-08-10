@@ -3,7 +3,7 @@ import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
 // Configuración de directorios
-const UPLOADS_DIR = path.join(process.cwd(), 'uploads');
+const UPLOADS_DIR = path.join(process.cwd(), 'public/uploads');
 const UPLOAD_TYPES = {
   sliders: path.join(UPLOADS_DIR, 'sliders'),
   recursos: path.join(UPLOADS_DIR, 'recursos'),
