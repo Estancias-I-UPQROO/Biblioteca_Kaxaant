@@ -7,4 +7,18 @@
 
 .footer-orange-bg{
     background-color: rgba(61, 34, 1, 0.623)
+}/* RUTA: src/app/globals.css */
+
+/* --- Estilos para el Footer Fijo Abajo --- */
+
+/* Hacemos que el contenedor principal ocupe al menos toda la altura de la pantalla */
+.site-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Esta es la regla clave */
+.main-content {
+  flex-grow: 1; /* Le dice al contenido principal que "crezca" y ocupe todo el espacio disponible */
 }

@@ -47,8 +47,11 @@ async function getCategories(): Promise<Categoria[]> {
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Biblioteca Virtual",
-  description: "Universidad Politécnica de Quintana Roo",
+  title: "Biblioteca Kaxáant",
+    description: "Universidad Politécnica de Quintana Roo",
+  icons: {
+    icon: '/icono.png', // Path to your icon inside the 'public' folder
+  },
 };
 
 // --- Layout Principal ---
@@ -56,17 +59,16 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const categorias = await getCategories();
 
   return (
-    <html lang="es">
-      <body className={inter.className}>
-        <Navbar categorias={categorias} />
-        <main>{children}</main>
-        
-        
-        <RedesSociales redes={redesSocialesData} />
-        <LibraryAssistant initialCategories={categorias} />
-        <Footer />
-
-      </body>
-    </html>
+       <div className="site-container">
+      <Navbar categorias={categorias} />
+      <main className="main-content">
+        {children}
+      </main>
+      
+      <RedesSociales redes={redesSocialesData} />
+      <LibraryAssistant initialCategories={categorias} />
+      <Footer />
+    </div>
   );
+
 }
