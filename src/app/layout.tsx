@@ -9,6 +9,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Biblioteca Virtual UPQROO", // Título general
   description: "Universidad Politécnica de Quintana Roo",
+  icons: {
+    icon: '/icono.png', // Path to your icon inside the 'public' folder
+  },
 };
 
 // Este es el layout raíz que envuelve TODO, público y admin.
