@@ -8,6 +8,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import './Admindash.css';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import { Recurso, RecursosPorCategoria } from '@/types/RecursosPorCategoriaProps';
 // import { useResourceForm } from '@/hooks/useResourceForm'; // Descomenta cuando implementes la pestaña de Recursos
 
 // --- Configuración de Axios ---
@@ -50,11 +51,30 @@ export default function AdminDashboardPage() {
 
   // --- Estados para Hero Slider ---
   const [heroImages, setHeroImages] = useState<HeroImage[]>([]);
-  
+
   // --- Estados para Eventos ---
   const [eventos, setEventos] = useState<Evento[]>([]);
   const [editingEvento, setEditingEvento] = useState<Evento | null>(null);
   const [addingEvento, setAddingEvento] = useState<Partial<Evento> | null>(null);
+
+  // --- Estados para Recursos Electrónicos ---
+  const [categorias, setCategorias] = useState<any[]>([]);
+  const [recursos, setRecursos] = useState<RecursosPorCategoria[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategoryName, setSelectedCategoryName] = useState('');
+  const [editingResource, setEditingResource] = useState<any | null>(null);
+  const [resourceForm, setResourceForm] = useState({
+    Nombre: '',
+    Descripcion: '',
+    Enlace_Pagina: ''
+  });
+  const [resourcePreview, setResourcePreview] = useState('');
+  const [validationErrors, setValidationErrors] = useState({
+    Nombre: '',
+    Descripcion: '',
+    Enlace_Pagina: '',
+    Imagen: ''
+  });
 
   // --- LÓGICA PARA HERO SLIDER ---
   const fetchSliderImages = async () => {
@@ -255,12 +275,212 @@ export default function AdminDashboardPage() {
     }
   };
 
+  // --- Funciones para Recursos Electrónicos ---
+  const fetchCategorias = async () => {
+    setLoading(true);
+    try {
+      const response = await api.get('/categorias-recursos-electronicos/get-categorias');
+      setCategorias(response.data);
+    } catch (err) {
+      console.error("Error al obtener categorías:", err);
+      setError("No se pudieron cargar las categorías.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchRecursos = async (idCategoria: string) => {
+    if (!idCategoria) return;
+    setLoading(true);
+    try {
+      const { data } = await api.get<RecursosPorCategoria[]>(`/recursos-electronicos/get-recursos/${idCategoria}`);
+      setRecursos(data);
+    } catch (err) {
+      console.error("Error al obtener recursos:", err);
+      setError("No se pudieron cargar los recursos.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSelectCategory = (idCategoria: string) => {
+    const categoria = categorias.find(c => c.ID_Categoria_Recursos_Electronicos === idCategoria);
+    setSelectedCategory(idCategoria);
+    setSelectedCategoryName(categoria?.Nombre || '');
+    setEditingResource(null);
+    setResourceForm({
+      Nombre: '',
+      Descripcion: '',
+      Enlace_Pagina: '',
+    });
+    setResourcePreview('');
+    fetchRecursos(idCategoria);
+  };
+
+  const handleResourceImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const imageUrl = URL.createObjectURL(file);
+      setResourcePreview(imageUrl);
+      setValidationErrors(prev => ({
+        ...prev,
+        Imagen: ''
+      }));
+    }
+  };
+
+  const handleResourceFormChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setResourceForm(prev => ({ ...prev, [name]: value }));
+
+    // Validación en tiempo real
+    if (validationErrors[name as keyof typeof validationErrors]) {
+      setValidationErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
+  };
+  const handleSelectResourceForEditing = (categoria: RecursosPorCategoria) => {
+    const { recurso } = categoria;
+    setEditingResource(recurso);
+    setResourceForm({
+      Nombre: recurso.Nombre,
+      Descripcion: recurso.Descripcion,
+      Enlace_Pagina: recurso.Enlace_Pagina
+    });
+    setResourcePreview('');
+  };
+
+  const handleSubmitResource = async () => {
+    if (!selectedCategory) return;
+
+    // Validar antes de enviar
+    if (!validateForm()) {
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('Nombre', resourceForm.Nombre);
+    formData.append('Descripcion', resourceForm.Descripcion);
+    formData.append('Enlace_Pagina', resourceForm.Enlace_Pagina);
+
+    if (resourcePreview) {
+      const fileInput = document.getElementById('resource-image-upload') as HTMLInputElement;
+      if (fileInput?.files?.[0]) {
+        formData.append('imagen', fileInput.files[0]);
+      }
+    }
+
+    setLoading(true);
+    try {
+      if (editingResource) {
+        await api.put(`/recursos-electronicos/update-recurso/${editingResource.ID_Recurso_Electronico}`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+      } else {
+        await api.post(`/recursos-electronicos/create-recurso/${selectedCategory}`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+      }
+
+      await fetchRecursos(selectedCategory);
+      setEditingResource(null);
+      setResourceForm({
+        Nombre: '',
+        Descripcion: '',
+        Enlace_Pagina: '',
+      });
+      setResourcePreview('');
+      setValidationErrors({
+        Nombre: '',
+        Descripcion: '',
+        Enlace_Pagina: '',
+        Imagen: ''
+      });
+    } catch (err) {
+      console.error("Error al guardar recurso:", err);
+      setError("Error al guardar el recurso.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleToggleResourceStatus = async (idRecurso: string, activo: boolean) => {
+    setLoading(true);
+    try {
+      if (activo) {
+        await api.patch(`/recursos-electronicos/restore-recurso/${idRecurso}`);
+      } else {
+        await api.patch(`/recursos-electronicos/delete-recurso/${idRecurso}`);
+      }
+      await fetchRecursos(selectedCategory!);
+      setEditingResource(null);
+    } catch (err) {
+      console.error("Error al cambiar estado del recurso:", err);
+      setError("Error al cambiar el estado del recurso.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const validateForm = () => {
+    const errors = {
+      Nombre: '',
+      Descripcion: '',
+      Enlace_Pagina: '',
+      Imagen: ''
+    };
+    let isValid = true;
+
+    // Validar Nombre
+    if (!resourceForm.Nombre.trim()) {
+      errors.Nombre = 'El nombre es requerido';
+      isValid = false;
+    } else if (resourceForm.Nombre.length > 100) {
+      errors.Nombre = 'El nombre no debe exceder los 100 caracteres';
+      isValid = false;
+    }
+
+    // Validar Descripción
+    if (!resourceForm.Descripcion.trim()) {
+      errors.Descripcion = 'La descripción es requerida';
+      isValid = false;
+    }
+
+    // Validar URL
+    if (!resourceForm.Enlace_Pagina.trim()) {
+      errors.Enlace_Pagina = 'La URL es requerida';
+      isValid = false;
+    } else {
+      try {
+        new URL(resourceForm.Enlace_Pagina);
+      } catch (e) {
+        errors.Enlace_Pagina = 'Ingrese una URL válida (ej: https://ejemplo.com)';
+        isValid = false;
+      }
+    }
+
+    // Validar Imagen (solo para creación)
+    if (!editingResource && !resourcePreview) {
+      errors.Imagen = 'La imagen es requerida';
+      isValid = false;
+    }
+
+    setValidationErrors(errors);
+    return isValid;
+  };
+
+
   useEffect(() => {
     if (activeTab === 'inicio') {
       fetchSliderImages();
       fetchEventos();
     }
-    // Lógica para otras pestañas irá aquí
+
+    if (activeTab === 'recursos') {
+      fetchCategorias();
+    }
   }, [activeTab]);
 
   const settingsHero = {
@@ -345,18 +565,18 @@ export default function AdminDashboardPage() {
                   </div>
                 ))}
               </div>
-              
+
               {currentFormEvento && (
                 <div ref={formRef} className="resource-form">
                   <h3>{editingEvento ? `Editando: ${currentFormEvento.titulo}` : 'Nuevo Evento'}</h3>
-                  
+
                   {currentFormEvento.imagen && <img src={currentFormEvento.imagen} alt="Previsualización" className="form-image-preview" />}
                   <label htmlFor="evento-image-upload" className="file-upload-label">Imagen Principal...</label>
                   <input id="evento-image-upload" type="file" accept="image/*" onChange={handleEventoImageChange} style={{ display: 'none' }} />
-                  
+
                   <input name="titulo" type="text" placeholder="Título del evento" value={currentFormEvento.titulo || ''} onChange={handleEventoFormChange} />
                   <textarea name="descripcion" placeholder="Descripción" value={currentFormEvento.descripcion || ''} onChange={handleEventoFormChange} />
-                  
+
                   <h4>Botones de Sub-evento</h4>
                   {currentFormEvento.botones?.map((btn, index) => (
                     <div key={index} className="boton-item">
@@ -367,11 +587,11 @@ export default function AdminDashboardPage() {
                         <img src={URL.createObjectURL(btn.imagenAsociada)} alt="Previsualización" className="form-image-preview-small" />
                       }
                       <label htmlFor={`boton-image-${index}`} className="file-upload-label small">Imagen Botón...</label>
-                      <input id={`boton-image-${index}`} type="file" accept="image/*" onChange={(e) => handleBotonImageChange(index, e.target.files?.[0] || null)} style={{ display: 'none' }}/>
+                      <input id={`boton-image-${index}`} type="file" accept="image/*" onChange={(e) => handleBotonImageChange(index, e.target.files?.[0] || null)} style={{ display: 'none' }} />
                       <button onClick={() => removeBotonFromForm(index)} className="delete small">Quitar</button>
                     </div>
                   ))}
-                  
+
                   <div className="form-actions">
                     <button type="button" onClick={addBotonToForm}>+ Agregar Botón</button>
                     <button type="button" onClick={() => handleSubmitEvento(currentFormEvento)} className="save">{editingEvento ? 'Guardar Cambios' : 'Crear Evento'}</button>
@@ -389,7 +609,183 @@ export default function AdminDashboardPage() {
         {activeTab === 'recursos' && (
           <div>
             <h1>Administrar Recursos Electrónicos</h1>
-            <p>Esta sección se construirá a continuación.</p>
+
+            {/* Sección de Categorías */}
+            <div className="admin-section">
+              <h2>Categorías</h2>
+              <div className="categories-scroll-container">
+                <div className="categories-list">
+                  {categorias.map(categoria => (
+                    <button
+                      key={categoria.ID_Categoria_Recursos_Electronicos}
+                      className={`category-button ${selectedCategory === categoria.ID_Categoria_Recursos_Electronicos ? 'active' : ''}`}
+                      onClick={() => handleSelectCategory(categoria.ID_Categoria_Recursos_Electronicos)}
+                    >
+                      {categoria.Nombre}
+                      {!categoria.Activo && <span className="inactive-badge">Inactivo</span>}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Sección de Recursos */}
+            {selectedCategory && (
+              <div className="admin-section">
+                <h2>Recursos de la categoría: {selectedCategoryName}</h2>
+
+                {/* Formulario de Recurso - Siempre visible cuando hay categoría seleccionada */}
+                <div className="resource-form">
+                  <h3>{editingResource ? `Editando: ${editingResource.Nombre}` : 'Nuevo Recurso'}</h3>
+
+                  {/* Previsualización de imagen */}
+                  {(resourcePreview || editingResource?.Imagen_URL) && (
+                    <img
+                      src={resourcePreview || `http://localhost:4501${editingResource?.Imagen_URL}`}
+                      alt="Previsualización"
+                      className="form-image-preview"
+                    />
+                  )}
+
+                  <label htmlFor="resource-image-upload" className="file-upload-label">
+                    {resourcePreview || editingResource ? 'Cambiar Imagen...' : 'Seleccionar Imagen...'}
+                  </label>
+                  <input
+                    id="resource-image-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleResourceImageChange}
+                    style={{ display: 'none' }}
+                  />
+                  {!editingResource && validationErrors.Imagen && (
+                    <p className="error-message">{validationErrors.Imagen}</p>
+                  )}
+
+                  <input
+                    name="Nombre"
+                    type="text"
+                    placeholder="Nombre del recurso"
+                    value={resourceForm.Nombre || ''}
+                    onChange={handleResourceFormChange}
+                    className={validationErrors.Nombre ? 'has-error' : ''}
+                  />
+                  {validationErrors.Nombre && (
+                    <p className="error-message">{validationErrors.Nombre}</p>
+                  )}
+
+                  <textarea
+                    name="Descripcion"
+                    placeholder="Descripción"
+                    value={resourceForm.Descripcion || ''}
+                    onChange={handleResourceFormChange}
+                    className={validationErrors.Descripcion ? 'has-error' : ''}
+                  />
+                  {validationErrors.Descripcion && (
+                    <p className="error-message">{validationErrors.Descripcion}</p>
+                  )}
+
+                  <input
+                    name="Enlace_Pagina"
+                    type="url"
+                    placeholder="URL del recurso (https://...)"
+                    value={resourceForm.Enlace_Pagina || ''}
+                    onChange={handleResourceFormChange}
+                    className={validationErrors.Enlace_Pagina ? 'has-error' : ''}
+                  />
+                  {validationErrors.Enlace_Pagina && (
+                    <p className="error-message">{validationErrors.Enlace_Pagina}</p>
+                  )}
+
+                  <div className="form-actions">
+                    <button
+                      type="button"
+                      onClick={handleSubmitResource}
+                      className="save"
+                    >
+                      {editingResource ? 'Guardar Cambios' : 'Crear Recurso'}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingResource(null);
+                        setResourceForm({
+                          Nombre: '',
+                          Descripcion: '',
+                          Enlace_Pagina: '',
+                        });
+                        setResourcePreview('');
+                      }}
+                      className="cancel"
+                    >
+                      Cancelar
+                    </button>
+
+                    {editingResource && (
+                      <button
+                        type="button"
+                        onClick={() => handleToggleResourceStatus(editingResource.ID_Recurso_Electronico, !editingResource.Activo)}
+                        className={editingResource.Activo ? 'deactivate' : 'activate'}
+                      >
+                        {editingResource.Activo ? 'Desactivar' : 'Activar'}
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Lista de Recursos */}
+                <div className="resources-container">
+                  <div className="resources-grid">
+                    {recursos.length > 0 ? (
+                      recursos.map(categoria => (
+                        categoria && (
+                          <div
+                            key={categoria.recurso.ID_Recurso_Electronico}
+                            className={`resource-card ${!categoria.recurso.Activo ? 'inactive' : ''}`}
+                            onClick={() => handleSelectResourceForEditing(categoria)}
+                          >
+                            <div className="resource-image-container">
+                              <img
+                                src={`http://localhost:4501${categoria.recurso.Imagen_URL}`}
+                                alt={categoria.recurso.Nombre}
+                              />
+                            </div>
+                            <div className="resource-info">
+                              <h4>{categoria.recurso.Nombre}</h4>
+                              <p className="description">
+                                {categoria.recurso.Descripcion}
+                              </p>
+                              <div className='resource-actions-container'>
+                                <a
+                                  href={categoria.recurso.Enlace_Pagina}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="resource-link"
+                                >
+                                  Visitar Recurso
+                                </a>
+                                <button
+                                  className={`status-button ${categoria.recurso.Activo ? 'active' : 'inactive'}`}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleToggleResourceStatus(categoria.recurso.ID_Recurso_Electronico, !categoria.recurso.Activo);
+                                  }}
+                                >
+                                  {categoria.recurso.Activo ? 'Activado' : 'Desactivado'}
+                                </button>
+                              </div>
+                            </div>
+                            {!categoria.recurso.Activo && <span className="inactive-badge">Inactivo</span>}
+                          </div>
+                        )
+                      ))
+                    ) : (
+                      <p className="no-resources">No hay recursos en esta categoría</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
