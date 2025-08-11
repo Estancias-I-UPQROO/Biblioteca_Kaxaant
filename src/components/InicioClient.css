@@ -1,11 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Montserrat:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Montserrat:wght@400;600;800&display=swap');
 
-/* BASE */
-body {
-  font-family: 'Poppins', sans-serif;
-}
-
-/* HERO BANNER */
+/* --- HERO BANNER --- */
 .hero-biblioteca {
   width: 100%;
   height: 70vh;
@@ -17,7 +12,7 @@ body {
 .slide-biblio {
   position: relative;
   width: 100%;
-  height: 100%;
+  height: 70vh; /* Asegura que cada slide tenga la altura correcta */
 }
 
 .slide-biblio img {
@@ -27,7 +22,6 @@ body {
   display: block;
 }
 
-/* Capa oscura encima del slide */
 .slide-biblio::after {
   content: "";
   position: absolute;
@@ -36,7 +30,6 @@ body {
   z-index: 1;
 }
 
-/* CONTENIDO DEL HERO */
 .contenido-hero {
   position: absolute;
   top: 50%;
@@ -47,128 +40,69 @@ body {
   text-align: center;
   padding: 1rem;
   width: 90%;
+  max-width: 1400px; /* Añadimos un max-width para que el texto no sea demasiado ancho en pantallas ultra-anchas */
 }
 
 .contenido-hero h1 {
   font-size: clamp(2rem, 6vw, 3.5rem);
   font-weight: 800;
   text-transform: uppercase;
-  margin: 0.1rem 0;
+  margin-bottom: 1rem;
   color: #f97316;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 1rem;
-  border-radius: 10px;
-  font-family: 'Montserrat', sans-serif;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .contenido-hero h2 {
   font-size: clamp(1rem, 4vw, 1.5rem);
   font-weight: 600;
-  margin-top: 1rem;
   color: #ffffff;
   padding: 0.8rem 1.2rem;
   border-radius: 10px;
   background: #f97316;
   display: inline-block;
-  font-family: 'Montserrat', sans-serif;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
 
-
-
-
-/* Efecto Fade del Hero */
-.hero-biblioteca .carousel .slider-wrapper {
-  overflow: hidden !important;
-}
-.carousel .slider-wrapper {
-  overflow: visible !important;
-}
-.hero-biblioteca .carousel .slider {
-  transition: opacity 2s ease-in-out !important;
-}
-
-.hero-biblioteca .carousel .slide {
-  background: none !important;
-  opacity: 0 !important;
-  transition: opacity 2s ease-in-out !important;
-}
-
-.hero-biblioteca .carousel .slide.selected {
-  opacity: 1 !important;
-}
-.carousel .slide {
-  overflow: visible !important;
-}
-
-
-
-
-/* Prevenir selección en todo el carrusel */
-.carousel * {
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-}
-
-
-@media (max-width: 667px) {
-  .franja-contenedor {
-    height: 250px;
-  }
-  
-  .contenido-texto {
-    padding: 1rem;
-  }
-  
-  .contenido-texto h3 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-  }
-
-}
+/* --- CARRUSEL DE EVENTOS (SECCIÓN CORREGIDA) --- */
 .slider-jmind {
   background-color: #ffffff;
-  padding: 2rem;
-
-  color: white;
+  padding: 3rem 0; /* Eliminamos padding horizontal para controlar el ancho desde el contenedor */
   font-family: 'Poppins', sans-serif;
-  padding: 1cm 2rem ;
- 
+  overflow-x: hidden; /* Previene el desbordamiento horizontal en móviles */
 }
 
-.slider-titulo {
-  text-align: center;
-  font-size: 2rem;
-  margin-bottom: 1.5rem;
-  color: #f97316;
+.slider-container {
+  width: 90%; /* Hacemos que el carrusel ocupe el 90% del ancho de la pantalla */
+  margin: 0 auto; /* Centramos el carrusel */
+  /* Eliminamos el max-width para que pueda ocupar más espacio */
 }
 
 .slider-container .slick-slide {
-  padding: 0 10px;
+  padding: 0 10px; /* Espacio entre las tarjetas */
 }
-.slider-container .slick-track {
-  /* Forzamos a que siempre sea un contenedor flexible */
-  display: flex !important; 
-  align-items: center !important; /* Alinea verticalmente por si tienen alturas distintas */
-}
+
 .slider-card {
   position: relative;
   border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
-  transition: transform 0.3s ease;
   height: 250px;
+  display: block; /* Asegura que Link se comporte como bloque */
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.slider-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
 }
 
 .slider-card img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  transition: transform 0.4s ease;
 }
 
 .slider-card:hover img {
@@ -181,12 +115,12 @@ body {
   left: 0;
   right: 0;
   height: 100%;
-  background: rgba(0, 0, 0, 0.7);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 20%, transparent 100%);
   color: white;
-  padding: 1rem;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  justify-content: end;
+  justify-content: flex-end;
   opacity: 0;
   transition: opacity 0.4s ease;
 }
@@ -197,6 +131,7 @@ body {
 
 .slider-hover-box h3 {
   font-size: 1.3rem;
+  font-weight: 700;
   margin: 0;
   color: #f97316;
 }
@@ -206,99 +141,85 @@ body {
   margin: 0.2rem 0 0;
 }
 
-
-.slider-overlay {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: 30%;
-  background: rgba(0, 0, 0, 0.5);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  font-size: 1.2rem;
-  text-align: center;
-}
-
-/* Flechas personalizadas */
-/* Elimina texto "Previous" y "Next" */
+/* Flechas personalizadas del carrusel */
 .slider-container .slick-prev,
 .slider-container .slick-next {
-  font-size: 0;
-  line-height: 0;
-  color: transparent;
-  background: none !important;
-  border: none;
+  width: 40px;
+  height: 40px;
+  z-index: 10;
 }
+/* Ajustamos la posición de las flechas para que no se salgan en móvil */
+.slider-container .slick-prev { left: 10px; }
+.slider-container .slick-next { right: 10px; }
 
-/* Solo mostramos el contenido :before con la flecha */
 .slider-container .slick-prev:before,
 .slider-container .slick-next:before {
-  content: '❮';
-  font-size: 2rem;
-  color: rgb(235, 108, 4);
+  font-size: 2.5rem;
+  color: #f97316;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+.slider-container .slick-prev:hover:before,
+.slider-container .slick-next:hover:before {
   opacity: 1;
-  line-height: 1;
 }
+.slider-container .slick-prev:before { content: '‹'; }
+.slider-container .slick-next:before { content: '›'; }
 
-.slider-container .slick-next:before {
-  content: '❯';
-}
-/* Estilos para el modal */
+
+/* --- MODAL --- */
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background-color: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
   backdrop-filter: blur(5px);
+  padding: 1rem;
 }
 
 .modal-contenido {
   background-color: white;
   border-radius: 12px;
   overflow: hidden;
-  width: 90%;
+  width: 100%;
   max-width: 800px;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   animation: modalEntrada 0.3s ease-out;
 }
 
 @keyframes modalEntrada {
-  from {
-    opacity: 0;
-    transform: translateY(-50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }
 
-.modal-imagen {
+.modal-imagen-container {
   width: 100%;
-  height: 250px;
+  height: 300px;
+  flex-shrink: 0;
+}
+
+.modal-imagen-fullscreen {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
 .modal-texto {
-  padding: 1.5rem;
+  padding: 1.5rem 2rem;
+  overflow-y: auto;
 }
 
 .modal-texto h3 {
   color: #f97316;
   margin-top: 0;
   font-size: 1.8rem;
+  font-weight: 700;
 }
 
 .modal-texto p {
@@ -309,31 +230,33 @@ body {
 
 .modal-cerrar {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 15px;
+  right: 15px;
   background: rgba(0, 0, 0, 0.5);
   color: white;
   border: none;
   border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  font-size: 1.2rem;
+  width: 35px;
+  height: 35px;
+  font-size: 1.5rem;
   cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 10;
+  transition: background-color 0.2s, transform 0.2s;
 }
 
 .modal-cerrar:hover {
   background: rgba(0, 0, 0, 0.8);
+  transform: rotate(90deg);
 }
-/* Estilos para los botones de imágenes */
+
 .botones-imagenes {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin: 15px 0;
+  margin-top: 1rem;
 }
 
 .imagen-boton {
@@ -341,269 +264,40 @@ body {
   background-color: #f97316;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   font-weight: 500;
 }
 
 .imagen-boton:hover {
   background-color: #ea580c;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 .imagen-boton.activo {
   background-color: #c2410c;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Estilo para el botón principal */
-.modal-boton {
-  margin-top: 15px;
-  padding: 10px 20px;
-  background-color: #f97316;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
+/* --- REGLAS RESPONSIVE --- */
+@media (max-width: 1024px) {
+    .slider-container .slick-prev { left: 5px; }
+    .slider-container .slick-next { right: 5px; }
 }
 
-.modal-boton:hover {
-  background-color: #ea580c;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
-}
-
-/* Estilo para el botón de cerrar modal */
-.modal-cerrar {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: #f97316;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  font-size: 18px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
-
-.modal-cerrar:hover {
-  background-color: #ea580c;
-  transform: rotate(90deg);
-}
-.modal-boton {
-  background-color: #f97316;
-  color: white;
-  border: none;
-  padding: 0.8rem 1.5rem;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: background-color 0.3s;
-}
-
-.modal-boton:hover {
-  background-color: #e05d0a;
-}
-
-/* Responsive para el modal */
 @media (max-width: 768px) {
-  .modal-contenido {
-    width: 95%;
-    max-height: 85vh;
+  .hero-biblioteca {
+    height: 60vh;
   }
-  
-  .modal-imagen {
-    height: 200px;
+  .slider-jmind {
+    padding: 2rem 0;
   }
-  
-  .modal-texto {
-    padding: 1rem;
-  }
-  
-  .modal-texto h3 {
-    font-size: 1.5rem;
-  }
-}
 
-@media (max-width: 667px) {
   .modal-contenido {
     flex-direction: column;
   }
-  
-  .modal-imagen {
-    height: 150px;
-  }
-} 
-
-
-
-
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.7);
-  z-index: 1000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow-y: auto;
-  padding: 2rem 1rem;
-}
-
-.modal-contenido {
-  background-color: transparent; /* para que el scroll se camufle */
-  border-radius: 20px;
-  max-height: 90vh;
-  overflow-y: auto;
-  width: 100%;
-  max-width: 700px;
-  scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
-}
-
-/* Imagen redondeada arriba */
-.modal-imagen-container img {
-  width: 100%;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  display: block;
-}
-
-/* Texto en fondo blanco, parte de abajo */
-.modal-texto {
-  background: white;
-  padding: 1.5rem;
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
-}
-
-/* Botón cerrar */
-.modal-cerrar {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 2rem;
-  background: none;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
-/* Scroll transparente (solo para navegadores compatibles) */
-.modal-contenido::-webkit-scrollbar {
-  width: 8px;
-}
-.modal-contenido::-webkit-scrollbar-track {
-  background: transparent;
-}
-.modal-contenido::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
-}
-
-/* Media Query especial para tablets (iPad, Zenbook Fold, etc.) */
-@media (min-width: 768px) and (max-width: 1180px) {
-  .hero-biblioteca {
-    height: 10cm;
-  }
-
-  .slide-biblio img {
-    object-fit: cover;
-  }
-
-  .contenido-hero {
-    width: 85%;
-  }
-
-  .contenido-hero h1 {
-    font-size: 2.5rem;
-  }
-
-  .contenido-hero h2 {
-    font-size: 1.2rem;
-  }
-
-  
-}
-@media (min-width: 480px) and (max-width: 740px) {
-  .hero-biblioteca {
-    height: 15cm;
-  }
-
-  .slide-biblio img {
-    object-fit: cover;
-  }
-
-  .contenido-hero {
-    width: 85%;
-  }
-
-  .contenido-hero h1 {
-    font-size: 2rem;
-  }
-
-  .contenido-hero h2 {
-    font-size: 1rem;
-  }
-
-  
-}
-@media (min-width: 1180px) and (max-width: 1600px) {
-  .hero-biblioteca {
-    height: 15cm;
-  }
-
-  .slide-biblio img {
-    object-fit: cover;
-  }
-
-  .contenido-hero {
-    width: 85%;
-  }
-
-  .contenido-hero h1 {
-    font-size: 2.5rem;
-  }
-
-  .contenido-hero h2 {
-    font-size: 1.2rem;
-  }
-
-  
-}
-
-
-/* --- REGLAS RESPONSIVE UNIFICADAS --- */
-/* He unido tus dos media queries para (max-width: 768px) para que sea más limpio */
-@media (max-width: 768px) {
-  .hero-biblioteca,
-  .slide-biblio {
-    height: 60vh;
-  }
-
-  .contenido-hero {
-    padding: 0.5rem;
-    width: 95%;
-  }
-
-  .franja-contenedor {
-    height: 300px;
-  }
-  
-  .contenido-texto h3 {
-    font-size: 1.8rem;
-  }
-  
-  .contenido-texto p {
-    font-size: 1rem;
+  .modal-imagen-container {
+    height: 200px;
   }
 }
