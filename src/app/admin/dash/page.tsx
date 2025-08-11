@@ -56,6 +56,19 @@ export default function AdminDashboardPage() {
   const [eventos, setEventos] = useState<Evento[]>([]);
   const [editingEvento, setEditingEvento] = useState<Evento | null>(null);
   const [addingEvento, setAddingEvento] = useState<Partial<Evento> | null>(null);
+  const [eventoValidationErrors, setEventoValidationErrors] = useState<{
+    titulo: string;
+    descripcion: string;
+    imagen: string;
+    botones: string[];
+    botonesImagenes: string[];
+  }>({
+    titulo: '',
+    descripcion: '',
+    imagen: '',
+    botones: [],
+    botonesImagenes: []
+  });
 
   // --- Estados para Recursos Electrónicos ---
   const [categorias, setCategorias] = useState<any[]>([]);
@@ -155,6 +168,70 @@ export default function AdminDashboardPage() {
     }
   };
 
+
+  const validateEventoForm = (evento: Partial<Evento>) => {
+    const errors = {
+      titulo: '',
+      descripcion: '',
+      imagen: '',
+      botones: [] as string[],
+      botonesImagenes: [] as string[]
+    };
+    let isValid = true;
+
+    // Validar título
+    if (!evento.titulo?.trim()) {
+      errors.titulo = 'El título es requerido';
+      isValid = false;
+    } else if (evento.titulo.length > 100) {
+      errors.titulo = 'El título no debe exceder los 100 caracteres';
+      isValid = false;
+    }
+
+    // Validar descripción
+    if (!evento.descripcion?.trim()) {
+      errors.descripcion = 'La descripción es requerida';
+      isValid = false;
+    }
+
+    // Validar imagen principal (solo para creación)
+    if (!editingEvento && !evento.imagen) {
+      errors.imagen = 'La imagen principal es requerida';
+      isValid = false;
+    }
+
+    // Validar botones
+    if (evento.botones) {
+      evento.botones.forEach((boton, index) => {
+        // Validar texto del botón
+        if (!boton.texto.trim()) {
+          errors.botones[index] = 'El texto del botón es requerido';
+          isValid = false;
+        } else {
+          errors.botones[index] = '';
+        }
+
+        // Validar imagen del botón (solo para creación o si no tiene imagen previa)
+        const isNewButton = !boton.ID_SubEvento;
+        const hasNoImage = !boton.imagenAsociada;
+        const isEditingWithNoNewImage = editingEvento && !(boton.imagenAsociada instanceof File);
+
+        if (isNewButton && hasNoImage) {
+          errors.botonesImagenes[index] = 'La imagen del botón es requerida';
+          isValid = false;
+        } else if (isEditingWithNoNewImage && typeof boton.imagenAsociada !== 'string') {
+          errors.botonesImagenes[index] = 'La imagen del botón es requerida';
+          isValid = false;
+        } else {
+          errors.botonesImagenes[index] = '';
+        }
+      });
+    }
+
+    setEventoValidationErrors(errors);
+    return isValid;
+  };
+
   const handleSelectEventoForEditing = (evento: Evento) => {
     setAddingEvento(null);
     setEditingEvento({ ...evento, botones: evento.botones ? [...evento.botones] : [] });
@@ -169,6 +246,14 @@ export default function AdminDashboardPage() {
     const { name, value } = e.target;
     const updateFunc = editingEvento ? setEditingEvento : setAddingEvento;
     updateFunc((prev: any) => ({ ...prev, [name]: value }));
+
+    // Limpiar error cuando se modifica el campo
+    if (eventoValidationErrors[name as keyof typeof eventoValidationErrors]) {
+      setEventoValidationErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
   };
 
   const handleEventoImageChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -177,6 +262,12 @@ export default function AdminDashboardPage() {
       const imageUrl = URL.createObjectURL(file);
       const updateFunc = editingEvento ? setEditingEvento : setAddingEvento;
       updateFunc((prev: any) => ({ ...prev, imagen: imageUrl, imagenFile: file }));
+
+      // Limpiar error de imagen
+      setEventoValidationErrors(prev => ({
+        ...prev,
+        imagen: ''
+      }));
     }
   };
 
@@ -184,13 +275,28 @@ export default function AdminDashboardPage() {
     const nuevoBoton = { texto: '', imagenAsociada: '' };
     const updateFunc = editingEvento ? setEditingEvento : setAddingEvento;
     updateFunc((prev: any) => ({ ...prev, botones: [...(prev?.botones || []), nuevoBoton] }));
+
+    // Inicializar arrays de errores para el nuevo botón
+    setEventoValidationErrors(prev => ({
+      ...prev,
+      botones: [...prev.botones, ''],
+      botonesImagenes: [...prev.botonesImagenes, '']
+    }));
   };
+
 
   const removeBotonFromForm = (btnIndex: number) => {
     const updateFunc = editingEvento ? setEditingEvento : setAddingEvento;
     updateFunc((prev: any) => ({
       ...prev,
       botones: prev.botones?.filter((_: any, index: number) => index !== btnIndex) || [],
+    }));
+
+    // Eliminar errores del botón eliminado
+    setEventoValidationErrors(prev => ({
+      ...prev,
+      botones: prev.botones.filter((_: string, index: number) => index !== btnIndex),
+      botonesImagenes: prev.botonesImagenes.filter((_: string, index: number) => index !== btnIndex)
     }));
   };
 
@@ -209,6 +315,7 @@ export default function AdminDashboardPage() {
 
   const handleBotonImageChange = (index: number, file: File | null) => {
     if (!file) return;
+
     const updateFunc = editingEvento ? setEditingEvento : setAddingEvento;
     updateFunc((prev: any) => {
       const updatedBotones = (prev?.botones || []).map((boton: any, i: number) => {
@@ -219,9 +326,22 @@ export default function AdminDashboardPage() {
       });
       return { ...prev, botones: updatedBotones };
     });
+
+    // Limpiar error de imagen del botón
+    setEventoValidationErrors(prev => {
+      const newBotonesImagenes = [...prev.botonesImagenes];
+      newBotonesImagenes[index] = '';
+      return {
+        ...prev,
+        botonesImagenes: newBotonesImagenes
+      };
+    });
   };
 
+
   const handleSubmitEvento = async (evento: Evento | Partial<Evento>) => {
+    if (!validateEventoForm(evento)) return;
+
     setLoading(true);
     const formData = new FormData();
     formData.append('Titulo', evento.titulo!);
@@ -571,23 +691,74 @@ export default function AdminDashboardPage() {
                   <h3>{editingEvento ? `Editando: ${currentFormEvento.titulo}` : 'Nuevo Evento'}</h3>
 
                   {currentFormEvento.imagen && <img src={currentFormEvento.imagen} alt="Previsualización" className="form-image-preview" />}
-                  <label htmlFor="evento-image-upload" className="file-upload-label">Imagen Principal...</label>
+                  <label htmlFor="evento-image-upload" className={`file-upload-label ${!editingEvento && eventoValidationErrors.imagen ? 'has-error' : ''}`}>
+                    Imagen Principal...
+                  </label>
                   <input id="evento-image-upload" type="file" accept="image/*" onChange={handleEventoImageChange} style={{ display: 'none' }} />
+                  {!editingEvento && eventoValidationErrors.imagen && (
+                    <p className="error-message">{eventoValidationErrors.imagen}</p>
+                  )}
 
-                  <input name="titulo" type="text" placeholder="Título del evento" value={currentFormEvento.titulo || ''} onChange={handleEventoFormChange} />
-                  <textarea name="descripcion" placeholder="Descripción" value={currentFormEvento.descripcion || ''} onChange={handleEventoFormChange} />
+                  <input
+                    name="titulo"
+                    type="text"
+                    placeholder="Título del evento"
+                    value={currentFormEvento.titulo || ''}
+                    onChange={handleEventoFormChange}
+                    className={eventoValidationErrors.titulo ? 'has-error' : ''}
+                  />
+                  {eventoValidationErrors.titulo && (
+                    <p className="error-message">{eventoValidationErrors.titulo}</p>
+                  )}
+
+                  <textarea
+                    name="descripcion"
+                    placeholder="Descripción"
+                    value={currentFormEvento.descripcion || ''}
+                    onChange={handleEventoFormChange}
+                    className={eventoValidationErrors.descripcion ? 'has-error' : ''}
+                  />
+                  {eventoValidationErrors.descripcion && (
+                    <p className="error-message">{eventoValidationErrors.descripcion}</p>
+                  )}
 
                   <h4>Botones de Sub-evento</h4>
                   {currentFormEvento.botones?.map((btn, index) => (
                     <div key={index} className="boton-item">
-                      <input type="text" placeholder="Texto del botón" value={btn.texto} onChange={(e) => handleBotonTextChange(index, e.target.value)} />
+                      <input
+                        type="text"
+                        placeholder="Texto del botón"
+                        value={btn.texto}
+                        onChange={(e) => handleBotonTextChange(index, e.target.value)}
+                        className={eventoValidationErrors.botones[index] ? 'has-error' : ''}
+                      />
+                      {eventoValidationErrors.botones[index] && (
+                        <p className="error-message">{eventoValidationErrors.botones[index]}</p>
+                      )}
+
                       {typeof btn.imagenAsociada === 'string' && btn.imagenAsociada.startsWith('http') ?
                         <img src={btn.imagenAsociada} alt="Sub-evento" className="form-image-preview-small" />
                         : btn.imagenAsociada instanceof File &&
                         <img src={URL.createObjectURL(btn.imagenAsociada)} alt="Previsualización" className="form-image-preview-small" />
                       }
-                      <label htmlFor={`boton-image-${index}`} className="file-upload-label small">Imagen Botón...</label>
-                      <input id={`boton-image-${index}`} type="file" accept="image/*" onChange={(e) => handleBotonImageChange(index, e.target.files?.[0] || null)} style={{ display: 'none' }} />
+
+                      <label
+                        htmlFor={`boton-image-${index}`}
+                        className={`file-upload-label small ${eventoValidationErrors.botonesImagenes[index] ? 'has-error' : ''}`}
+                      >
+                        Imagen Botón...
+                      </label>
+                      <input
+                        id={`boton-image-${index}`}
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleBotonImageChange(index, e.target.files?.[0] || null)}
+                        style={{ display: 'none' }}
+                      />
+                      {eventoValidationErrors.botonesImagenes[index] && (
+                        <p className="error-message">{eventoValidationErrors.botonesImagenes[index]}</p>
+                      )}
+
                       <button onClick={() => removeBotonFromForm(index)} className="delete small">Quitar</button>
                     </div>
                   ))}
