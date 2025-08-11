@@ -3,7 +3,7 @@ import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
 // Configuración de directorios
-const UPLOADS_DIR = path.join(process.cwd(), 'public/uploads');
+const UPLOADS_DIR = path.join(process.cwd(), 'uploads');
 const UPLOAD_TYPES = {
   sliders: path.join(UPLOADS_DIR, 'sliders'),
   recursos: path.join(UPLOADS_DIR, 'recursos'),
@@ -44,6 +44,8 @@ export async function handleFileUpload(
   const ext = path.extname(file.name);
   const filename = `${uuidv4()}${ext}`;
   const filePath = path.join(UPLOAD_TYPES[uploadType], filename);
+
+  // Cambia esta línea para devolver la ruta de la API:
   const publicUrl = `/uploads/${uploadType}/${filename}`;
 
   // Convertir File a buffer y guardar

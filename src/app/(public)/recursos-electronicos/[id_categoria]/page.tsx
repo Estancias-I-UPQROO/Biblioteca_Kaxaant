@@ -42,7 +42,7 @@ export default function CategoriaPage() {
     if (!id_categoria) return;
 
     axios
-      .get(`http://localhost:4501/api/categorias-recursos-electronicos/get-categoria/${id_categoria}`)
+      .get(`http://academico.upqroo.edu.mx/api/categorias-recursos-electronicos/get-categoria/${id_categoria}`)
       .then(({ data }: { data: Categoria }) => {
         if (!data.Activo) {
           router.push("/");
@@ -57,7 +57,7 @@ export default function CategoriaPage() {
   useEffect(() => {
     if (!id_categoria) return;
     axios
-      .get(`http://localhost:4501/api/recursos-electronicos/get-recursos/${id_categoria}`)
+      .get(`http://academico.upqroo.edu.mx/api/recursos-electronicos/get-recursos/${id_categoria}`)
       .then(({ data }) => {
         setRelaciones(data);
         setLoadingRecursos(false);
@@ -91,7 +91,7 @@ export default function CategoriaPage() {
                   key={relacion.ID_Recurso_Electronico}
                   title={relacion.recurso.Nombre}
                   description={relacion.recurso.Descripcion}
-                  image={`http://localhost:4501${relacion.recurso.Imagen_URL}`}
+                  image={`http://academico.upqroo.edu.mx/api${relacion.recurso.Imagen_URL}`}
                   siteLink={relacion.recurso.Enlace_Pagina}
                   index={index}
                   expandedCardIndex={expandedCardIndex}

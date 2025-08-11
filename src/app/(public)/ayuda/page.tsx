@@ -2,31 +2,37 @@
 
 import { useState, useEffect } from 'react';
 import { FaFilePdf, FaDownload } from 'react-icons/fa';
+import dynamic from 'next/dynamic';
 
-// Importaciones de las librerías y sus estilos
-import { Viewer, Worker } from '@react-pdf-viewer/core';
-import Plyr from 'plyr-react';
+// Cargar componentes dinámicamente con SSR deshabilitado
+const Plyr = dynamic(() => import('plyr-react'), {
+  ssr: false,
+  loading: () => <p>Cargando reproductor...</p>
+});
+
+const PDFViewer = dynamic(
+  () => import('@react-pdf-viewer/core').then((mod) => mod.Viewer),
+  { ssr: false }
+);
+
+const PDFWorker = dynamic(
+  () => import('@react-pdf-viewer/core').then((mod) => mod.Worker),
+  { ssr: false }
+);
+
 import 'plyr-react/plyr.css';
 import '@react-pdf-viewer/core/lib/styles/index.css';
-
-// Importa tus estilos locales
 import './AyudaPage.css';
 
-// 2. Renombramos el componente y lo exportamos por defecto.
 export default function AyudaPage() {
   const [activePdf, setActivePdf] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
-  // El resto de tu código de lógica y JSX es prácticamente idéntico.
-  // Ya está bien escrito para un entorno de cliente.
   useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-  }, []);
-  
-  useEffect(() => {
+    setIsClient(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
@@ -49,6 +55,10 @@ export default function AyudaPage() {
     }
   ];
 
+  if (!isClient) {
+    return <div>Cargando...</div>;
+  }
+
   return (
     <main className="ayuda-container">
       <div className="video-section">
@@ -57,14 +67,11 @@ export default function AyudaPage() {
           <Plyr
             source={{
               type: 'video',
-              sources: [
-                {
-                  src: '/Como_acceder.mp4',
-                  type: 'video/mp4',
-                },
-              ],
+              sources: [{
+                src: '/Como_acceder.mp4',
+                type: 'video/mp4',
+              }],
             }}
-            // ... opciones de Plyr ...
           />
         </div>
       </div>
@@ -95,13 +102,13 @@ export default function AyudaPage() {
         </div>
 
         <div className="pdf-viewer">
-          <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
+          <PDFWorker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
             <div style={{ height: isMobile ? '60vh' : '80vh' }}>
-              <Viewer fileUrl={pdfs[activePdf].file} />
+              <PDFViewer fileUrl={pdfs[activePdf].file} />
             </div>
-          </Worker>
+          </PDFWorker>
         </div>
       </div>
     </main>
   );
-};
+}

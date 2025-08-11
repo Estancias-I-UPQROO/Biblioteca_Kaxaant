@@ -61,7 +61,7 @@ export default function SugerenciasPage() {
 
     try {
       await axios.post(
-        "http://localhost:4501/api/correos/enviar-correo-sugerencia-material",
+        "http://academico.upqroo.edu.mx/api/correos/enviar-correo-sugerencia-material",
         formData
       );
 
