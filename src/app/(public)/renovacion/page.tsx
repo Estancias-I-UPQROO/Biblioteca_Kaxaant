@@ -53,7 +53,7 @@ export default function RenovacionPage() {
     try {
       // Cambiado para usar endpoint local
       const { data } = await axios.post(
-        "http://academico.upqroo.edu.mx/api/correos/enviar-correo-renovacion",
+        "http://localhost:4501/api/correos/enviar-correo-renovacion",
         formData,
         { headers: { 'Content-Type': 'application/json' } }
       );

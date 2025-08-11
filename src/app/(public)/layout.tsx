@@ -32,7 +32,7 @@ const redesSocialesData = [
 // --- Función para Obtener Datos ---
 async function getCategories(): Promise<Categoria[]> {
   try {
-    const res = await fetch(`http://academico.upqroo.edu.mx/api/categorias-recursos-electronicos/get-categorias`, {
+    const res = await fetch(`http://localhost:4501/api/categorias-recursos-electronicos/get-categorias`, {
       next: { revalidate: 2000 }
     });
     if (!res.ok) return [];

@@ -13,7 +13,7 @@ import { Recurso, RecursosPorCategoria } from '@/types/RecursosPorCategoriaProps
 
 // --- Configuración de Axios ---
 const api = axios.create({
-  baseURL: 'http://academico.upqroo.edu.mx/api',
+  baseURL: 'http://localhost:4501/api',
   headers: { 'Content-Type': 'application/json' },
 });
 
@@ -96,7 +96,7 @@ export default function AdminDashboardPage() {
       const response = await api.get('/slider-hero/get-sliders');
       const data = response.data.map((item: any) => ({
         id: item.ID_Slider_Hero,
-        url: `http://academico.upqroo.edu.mx/api${item.Imagen_URL}`,
+        url: `http://localhost:4501/api${item.Imagen_URL}`,
         name: item.Imagen_URL.split('/').pop() || 'Imagen',
       }));
       setHeroImages(data);
@@ -149,14 +149,14 @@ export default function AdminDashboardPage() {
       const response = await api.get('/eventos/get-eventos');
       const data = response.data.map((e: any) => ({
         id: e.ID_Evento,
-        imagen: `http://academico.upqroo.edu.mx/api${e.Imagen_URL}`,
+        imagen: `http://localhost:4501/api${e.Imagen_URL}`,
         titulo: e.Titulo,
         activo: e.Activo,
         descripcion: e.Descripcion,
         botones: (e.SubEventos || []).map((se: any) => ({
           ID_SubEvento: se.ID_SubEvento,
           texto: se.Titulo,
-          imagenAsociada: `http://academico.upqroo.edu.mx/api${se.Imagen_URL}`
+          imagenAsociada: `http://localhost:4501/api${se.Imagen_URL}`
         }))
       }));
       setEventos(data);
@@ -812,7 +812,7 @@ export default function AdminDashboardPage() {
                   {/* Previsualización de imagen */}
                   {(resourcePreview || editingResource?.Imagen_URL) && (
                     <img
-                      src={resourcePreview || `http://academico.upqroo.edu.mx/api${editingResource?.Imagen_URL}`}
+                      src={resourcePreview || `http://localhost:4501/api${editingResource?.Imagen_URL}`}
                       alt="Previsualización"
                       className="form-image-preview"
                     />
@@ -917,7 +917,7 @@ export default function AdminDashboardPage() {
                           >
                             <div className="resource-image-container">
                               <img
-                                src={`http://academico.upqroo.edu.mx/api${categoria.recurso.Imagen_URL}`}
+                                src={`http://localhost:4501/api${categoria.recurso.Imagen_URL}`}
                                 alt={categoria.recurso.Nombre}
                               />
                             </div>

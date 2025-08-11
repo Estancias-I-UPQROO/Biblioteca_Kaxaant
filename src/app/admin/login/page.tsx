@@ -65,7 +65,7 @@ const Login = () => {
 
     try {
       const { data } = await axios.post(
-        'http://academico.upqroo.edu.mx/api/admin/login',
+        'http://localhost:4501/api/admin/login',
         {
           Usuario: username,
           Password: password

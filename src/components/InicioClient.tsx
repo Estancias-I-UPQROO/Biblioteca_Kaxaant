@@ -106,7 +106,7 @@ export default function InicioClient({ imagenesHero, inicioEventos }: InicioClie
             <div key={idx} className="slide-biblio">
               <img
                 // CAMBIO: Acceso a variables de entorno y a la URL de la imagen
-                src={`http://academico.upqroo.edu.mx/api${src.Imagen_URL}`}
+                src={`http://localhost:4501/api${src.Imagen_URL}`}
                 alt={`Imagen biblioteca ${idx}`}
               />
               <div className="slide-overlay"></div>
@@ -159,7 +159,7 @@ export default function InicioClient({ imagenesHero, inicioEventos }: InicioClie
             >
               <img
                 // CAMBIO: Acceso a variables de entorno
-                src={`http://academico.upqroo.edu.mx/api${evento.Imagen_URL}`}
+                src={`http://localhost:4501/api${evento.Imagen_URL}`}
                 alt={evento.Titulo}
               />
               <div className="slider-hover-box">
@@ -178,7 +178,7 @@ export default function InicioClient({ imagenesHero, inicioEventos }: InicioClie
             <button className="modal-cerrar" onClick={cerrarModal}>&times;</button>
             <div className="modal-imagen-container">
               <img
-                src={imagenActual?.startsWith('http') ? imagenActual : `http://academico.upqroo.edu.mx/api/${imagenActual || eventoSeleccionado.Imagen_URL}`}
+                src={imagenActual?.startsWith('http') ? imagenActual : `http://localhost:4501/api/${imagenActual || eventoSeleccionado.Imagen_URL}`}
                 alt={eventoSeleccionado.Titulo}
                 className="modal-imagen-fullscreen"
               />
@@ -194,7 +194,7 @@ export default function InicioClient({ imagenesHero, inicioEventos }: InicioClie
                       className={`imagen-boton ${imagenActual === subevento.Imagen_URL ? 'activo' : ''}`}
                       onClick={(e) => {
                         e.stopPropagation();
-                        cambiarImagen(`http://academico.upqroo.edu.mx/api/${subevento.Imagen_URL}`)
+                        cambiarImagen(`http://localhost:4501/api/${subevento.Imagen_URL}`)
                       }}
                     >
                       {subevento.Titulo}

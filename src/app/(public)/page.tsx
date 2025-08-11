@@ -6,7 +6,7 @@ import type { Hero, Evento } from '@/lib/types'; // (Opcional) Mover tipos a un 
 
 async function getImagenesHero(): Promise<Hero[]> {
   try {
-    const res = await fetch(`http://academico.upqroo.edu.mx/api/slider-hero/get-sliders`, {
+    const res = await fetch(`http://localhost:4501/api/slider-hero/get-sliders`, {
       cache: 'no-store', // Opcional: Evita que Next.js cachee esta petición
     });
     if (!res.ok) throw new Error('Error cargando imágenes del hero');
@@ -19,7 +19,7 @@ async function getImagenesHero(): Promise<Hero[]> {
 
 async function getEventos(): Promise<Evento[]> {
   try {
-    const res = await fetch(`http://academico.upqroo.edu.mx/api/eventos/get-eventos`, { cache: 'no-store' });
+    const res = await fetch(`http://localhost:4501/api/eventos/get-eventos`, { cache: 'no-store' });
     if (!res.ok) throw new Error('Error cargando eventos');
     return res.json();
   } catch (error) {
